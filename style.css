@@ -1,0 +1,9 @@
+html {
+    font-family:helvetica;
+    font-size:15px;
+}
+
+td {
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}

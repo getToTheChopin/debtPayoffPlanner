@@ -1,0 +1,39 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Debt Payoff Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Debt Payoff Planner</h1>
+
+    <p>Blah</p>
+
+    <button onclick="addLoan()" id="addLoanButton">+ Add Loan</button>
+
+    <div id="loanDiv">
+        <table id="loanAssumptionTable">
+
+        </table>
+    </div>
+
+    <div id="planDiv">
+        <span>Monthly Payment: </span><input type="number" id="monthlyPaymentInput" class="userInput"><br>
+        <input type="radio" class="userInput" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br>
+        <input type="radio" class="userInput" id="snowballType" name="paymentType" value="snowball">Snowball<br>
+    </div>
+
+    <div id="loanTableDiv">
+
+    </div>
+
+</body>
+
+<script src="debtPayoffPlannerScript.js"></script>
+
+</html>
