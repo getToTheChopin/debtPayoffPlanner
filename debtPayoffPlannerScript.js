@@ -5,6 +5,7 @@ To be added:
 - Add ability to delete loans
 - Add ability to show / hide detailed loan tables
 - Add section for what if analysis (avalanche vs snowball comparison, what if monthly payment is higher by +$1 / +$10 / +$100 / custom)
+- Error handling (loan not set, loan never pays off, etc.)
 */
 
 var addLoanButton = document.getElementById("addLoanButton");
@@ -29,12 +30,21 @@ var loanInterestPaidArray = [];
 var loanPrincipalPaidArray = [];
 var loanEOPArray = [];
 
+var totalDebtBOPArray = [];
+var totalDebtEOPArray = [];
+
+var monthLabelArray = [];
 var loanPayoffMonthArray = [];
 
 var totalInterestByLoanArray = [];
 var totalPrincipalByLoanArray = [];
 
 var numMonths = 0;
+
+var chart;
+var chart2;
+var chart3;
+var chartActive = false;
 
 var outputTextDiv = document.getElementById("outputTextDiv");
 var summaryTableDiv = document.getElementById("summaryTableDiv"); 
@@ -130,8 +140,12 @@ function refreshAnalysis(){
     loanInterestPaidArray.length = 0;
     loanPrincipalPaidArray.length = 0;
     loanEOPArray.length = 0;
-
+    
     loanPayoffMonthArray.length = 0;
+    monthLabelArray.length = 0;
+
+    totalDebtBOPArray.length = 0;
+    totalDebtEOPArray.length = 0;
 
     outputTextDiv.innerHTML = "";
     summaryTableDiv.innerHTML = "";
@@ -142,6 +156,14 @@ function refreshAnalysis(){
     totalPrincipalPaid = 0;
 
     numMonths = 0;
+
+    if(chartActive == false){
+    
+    } else if(chartActive == true) {
+        chart.destroy();
+        chart2.destroy();
+        chart3.destroy();
+    }
 
     getUserInputs();
     calculateDebts();
@@ -196,6 +218,14 @@ function calculateDebts(){
 
         console.log("Month count: "+i);
 
+        totalDebtBOPArray[i] = 0;
+        totalDebtEOPArray[i] = 0;
+
+        //fill in array for month labels
+        var currentDate = new Date();
+        currentDate.setMonth(currentDate.getMonth()+i);
+        monthLabelArray[i] = formatDateAsString(currentDate);
+
         var adjMinPaymentArray = [];
         var currentMonthEligibleExcessArray = [];
         
@@ -212,6 +242,8 @@ function calculateDebts(){
             } else{
                 loanBOPArray[j][i] = loanEOPArray[j][i-1];
             }
+
+            totalDebtBOPArray[i] += loanBOPArray[j][i];
 
             loanInterestPaidArray[j][i] = loanBOPArray[j][i] * interestRateInputArray[j] / 12;
 
@@ -308,6 +340,8 @@ function calculateDebts(){
             totalInterestByLoanArray[q] += loanInterestPaidArray[q][i];
             totalPrincipalByLoanArray[q] += loanPrincipalPaidArray[q][i];
 
+            totalDebtEOPArray[i] += loanEOPArray[q][i];
+
             if(loanEOPArray[q][i]==0 && loanBOPArray[q][i]>0){
                 loanPayoffMonthArray[q] = i+1;
             }
@@ -361,6 +395,388 @@ function showOutputs(){
     outputTextDiv.appendChild(outputTextPara4);
 
     createSummaryTable();
+
+    chartActive = true;
+
+    //set tick spacing for chart x-axis
+    var tickSpacing = 0;
+    
+    if(numMonths <= 48){
+        tickSpacing = 2;
+    } else if(numMonths <=96){
+        tickSpacing = 4;
+    } else if(numMonths <=144){
+        tickSpacing = 6;
+    } else if(numMonths <= 240){
+        tickSpacing = 12;
+    } else {
+        tickSpacing = 24;
+    }
+
+    //draw total loan balance line chart with chart.js
+
+    var ctx = document.getElementById('totalBalanceChart').getContext('2d');
+
+    chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+    
+        // The data for our dataset
+        data: {
+            labels: monthLabelArray,
+            datasets: [
+                {
+                    label: "Total Loan Balance",
+                    data: totalDebtBOPArray,
+                    pointBackgroundColor: "rgb(0, 121, 129)",
+                    backgroundColor: "rgb(0, 121, 129, 0.2)",
+                    borderWidth: 2,
+                    borderStyle: "solid",
+                },
+            ]
+        },
+    
+        // Configuration options go here
+        options: {
+
+            maintainAspectRatio: false,
+        
+            tooltips: {
+                
+                // Include a dollar sign in the ticks and add comma formatting
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        return label;
+                    }
+                },
+            },
+
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        // Include a dollar sign in the ticks and add comma formatting
+                        callback: function(value, index, values) {
+                            return '$' + value.toFixed(2);
+                        },
+
+                        fontColor: "rgb(56,56,56)",
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Total Loan Balance",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+                }],
+
+                xAxes: [{
+                    ticks: {
+                        userCallback: function(item, index) {
+                            if (!(index % tickSpacing)) return item;
+                        },
+                        autoSkip: false,
+                        fontColor: "rgb(56,56,56)",
+
+                        maxRotation: 90,
+                        minRotation: 90, 
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Date",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+                }],    
+            },
+
+            legend: {
+                labels: {
+                    fontColor: "rgb(56,56,56)",
+                    boxWidth: 13,
+                    padding: 10,
+                },
+            },
+
+            title: {
+                display: true,
+                text: "Total Loan Balance",
+                fontSize: 18,
+                fontColor: "rgb(56,56,56)",
+                padding: 2,
+            },
+
+        }
+    });
+
+    //draw loan balance line chart with chart.js
+    var colours = [ '#2685CB', '#4AD95A', '#FEC81B', '#FD8D14', '#CE00E6', '#4B4AD3', '#FC3026', '#B8CCE3', '#6ADC88', '#FEE45F'  ];
+
+    var dataSetData2 = [];
+    
+    for(var i=0; i<numLoans; i++) {
+        dataSetData2[i] = {
+            label:loanNameInputArray[i],
+            data: loanBOPArray[i],
+            backgroundColor: colours[i],
+            hoverBackgroundColor: colours[i],
+            borderStyle: 'solid',
+            borderWidth: 2,
+            fill: false,
+        }
+    }
+
+    var ctx2 = document.getElementById('loanBalanceChart').getContext('2d');
+
+    chart2 = new Chart(ctx2, {
+        // The type of chart we want to create
+        type: 'line',
+    
+        // The data for our dataset
+        data: {
+            labels: monthLabelArray,
+            datasets: dataSetData2
+        },
+    
+        // Configuration options go here
+        options: {
+
+            maintainAspectRatio: false,
+        
+            tooltips: {
+                
+                // Include a dollar sign in the ticks and add comma formatting
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        return label;
+                    }
+                },
+            },
+
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        // Include a dollar sign in the ticks and add comma formatting
+                        callback: function(value, index, values) {
+                            return '$' + value.toFixed(2);
+                        },
+
+                        fontColor: "rgb(56,56,56)",
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Loan Balance",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+                }],
+
+                xAxes: [{
+                    ticks: {
+                        userCallback: function(item, index) {
+                            if (!(index % tickSpacing)) return item;
+                        },
+                        autoSkip: false,
+                        fontColor: "rgb(56,56,56)",
+
+                        maxRotation: 90,
+                        minRotation: 90, 
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Date",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+                }],    
+            },
+
+            legend: {
+                labels: {
+                    fontColor: "rgb(56,56,56)",
+                    boxWidth: 13,
+                    padding: 10,
+                },
+            },
+
+            title: {
+                display: true,
+                text: "Loan Balances",
+                fontSize: 18,
+                fontColor: "rgb(56,56,56)",
+                padding: 2,
+            },
+
+        }
+    });
+
+    //draw payment stacked bar chart with chart.js
+
+    var dataSetData3 = [];
+    
+    for(var i=0; i<numLoans; i++) {
+        dataSetData3[i] = {
+            label:loanNameInputArray[i],
+            data: loanPaymentArray[i],
+            backgroundColor: colours[i],
+        }
+    }
+
+    var ctx3 = document.getElementById('loanPaymentChart').getContext('2d');
+
+    chart3 = new Chart(ctx3, {
+        // The type of chart we want to create
+        type: 'bar',
+    
+        // The data for our dataset
+        data: {
+            labels: monthLabelArray,
+            datasets: dataSetData3
+        },
+    
+        // Configuration options go here
+        options: {
+
+            maintainAspectRatio: false,
+        
+            tooltips: {
+                
+                // Include a dollar sign in the ticks and add comma formatting
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        return label;
+                    }
+                },
+            },
+
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        // Include a dollar sign in the ticks and add comma formatting
+                        callback: function(value, index, values) {
+                            return '$' + value.toFixed(2);
+                        },
+
+                        fontColor: "rgb(56,56,56)",
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Loan Payment",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+
+                    stacked: true,
+
+                }],
+
+                xAxes: [{
+                    ticks: {
+                        userCallback: function(item, index) {
+                            if (!(index % tickSpacing)) return item;
+                        },
+                        autoSkip: false,
+                        fontColor: "rgb(56,56,56)",
+
+                        maxRotation: 90,
+                        minRotation: 90, 
+                    },
+
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Date",
+                        fontColor: "rgb(56,56,56)",
+                        fontStyle: "bold",
+                        fontSize: 15,
+                    },
+
+                    gridLines: {
+                        drawTicks: false,
+                        zeroLineColor: "rgb(56,56,56)",
+                        zeroLineWidth: 2,
+                    },
+
+                    stacked: true,
+
+                }],    
+            },
+
+            legend: {
+                labels: {
+                    fontColor: "rgb(56,56,56)",
+                    boxWidth: 13,
+                    padding: 10,
+                },
+            },
+
+            title: {
+                display: true,
+                text: "Monthly Loan Payments",
+                fontSize: 18,
+                fontColor: "rgb(56,56,56)",
+                padding: 2,
+            },
+
+        }
+    });
+
 
 }
 
