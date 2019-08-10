@@ -1,3 +1,12 @@
+/*
+To be added:
+- Don't do any calculations or show any outputs if the inputs are not fully filled in (show message instead that loan info is missing)
+- Add chart.js graphs
+- Add ability to delete loans
+- Add ability to show / hide detailed loan tables
+- Add section for what if analysis (avalanche vs snowball comparison, what if monthly payment is higher by +$1 / +$10 / +$100 / custom)
+*/
+
 var addLoanButton = document.getElementById("addLoanButton");
 
 var loanAssumptionTable = document.getElementById("loanAssumptionTable");
@@ -6,6 +15,8 @@ var loanNameInputArray= [];
 var loanBalanceInputArray = [];
 var interestRateInputArray = [];
 var minPaymentInputArray = [];
+
+var maxMonths = 600;
 
 var monthlyPayment = 0;
 var paymentType;
@@ -18,15 +29,26 @@ var loanInterestPaidArray = [];
 var loanPrincipalPaidArray = [];
 var loanEOPArray = [];
 
+var loanPayoffMonthArray = [];
+
+var totalInterestByLoanArray = [];
+var totalPrincipalByLoanArray = [];
+
 var numMonths = 0;
 
+var outputTextDiv = document.getElementById("outputTextDiv");
+var summaryTableDiv = document.getElementById("summaryTableDiv"); 
 var loanTableDiv = document.getElementById("loanTableDiv");
+
+//Final answers
+var debtFreeDate = new Date();
+var totalInterestPaid = 0;
+var totalPrincipalPaid = 0;
 
 
 //main method
 getUserInputs();
 calculateDebts();
-
 
 function addLoan(){
     var newRow = loanAssumptionTable.insertRow(-1);
@@ -109,20 +131,28 @@ function refreshAnalysis(){
     loanPrincipalPaidArray.length = 0;
     loanEOPArray.length = 0;
 
-    /*
-    var loanTables = document.getElementsByClassName("loanTable");
-    for(i=0; i<loanTables.length; i++){
-        loanTables[i].parentNode.removeChild(loanTables[i]);
-    }
-    */
+    loanPayoffMonthArray.length = 0;
 
+    outputTextDiv.innerHTML = "";
+    summaryTableDiv.innerHTML = "";
     loanTableDiv.innerHTML = "";
+
+    debtFreeDate = new Date();
+    totalInterestPaid = 0;
+    totalPrincipalPaid = 0;
+
+    numMonths = 0;
 
     getUserInputs();
     calculateDebts();
 }
 
 function calculateDebts(){
+
+    //Exit if monthly payment is not set
+    if(monthlyPayment == 0 || isNaN(monthlyPayment)){
+        return;
+    }
 
     console.log("Monthly Payment: "+monthlyPayment);
     console.log("Payment Type: "+paymentType);
@@ -158,14 +188,11 @@ function calculateDebts(){
         loanInterestPaidArray[i] = [];
         loanPrincipalPaidArray[i] = [];
         loanEOPArray[i] = [];
+        totalInterestByLoanArray[i] = 0;
+        totalPrincipalByLoanArray[i] = 0;
     }
 
-    for(i=0; i<600; i++){
-
-        //Exit loop if monthly payment is not set
-        if(monthlyPayment == 0 || isNaN(monthlyPayment)){
-            break;
-        }
+    for(i=0; i<maxMonths; i++){
 
         console.log("Month count: "+i);
 
@@ -274,20 +301,160 @@ function calculateDebts(){
             loanPaymentArray[q][i] = currentMonthLoanPaymentArray[q];    
             loanPrincipalPaidArray[q][i] = currentMonthLoanPaymentArray[q] - loanInterestPaidArray[q][i];
             loanEOPArray[q][i] = loanBOPArray[q][i] - loanPrincipalPaidArray[q][i];
+
+            totalInterestPaid += loanInterestPaidArray[q][i];
+            totalPrincipalPaid += loanPrincipalPaidArray[q][i];
+            
+            totalInterestByLoanArray[q] += loanInterestPaidArray[q][i];
+            totalPrincipalByLoanArray[q] += loanPrincipalPaidArray[q][i];
+
+            if(loanEOPArray[q][i]==0 && loanBOPArray[q][i]>0){
+                loanPayoffMonthArray[q] = i+1;
+            }
         }    
     }
 
-    numMonths = loanBOPArray[0].length;
+    numMonths = loanBOPArray[0].length-1;
+
+    //display final answer outputs
+    showOutputs();
+
+    //Make sure that the every loan has a payoff month so that tables will fill no matter what
+    for(y=0; y<numLoans; y++){
+        if(isNaN(loanPayoffMonthArray[y])){
+            loanPayoffMonthArray[y] = maxMonths;
+        }
+    }
 
     //Create loan tables
     console.log("Number of loans: "+numLoans);
     for(x=0; x<numLoans; x++){
         console.log("X value: "+x);
-        createDebtTables(x);
+        createDebtTables(x, loanPayoffMonthArray[x]);
     }
 }
 
-function createDebtTables(currentLoanNum){
+function showOutputs(){
+
+    //fill outputTextDiv
+    console.log("Debt free date: "+debtFreeDate);
+    debtFreeDate.setMonth(debtFreeDate.getMonth() + numMonths);
+    console.log("Debt free date: "+debtFreeDate);
+
+    var debtFreeDateString = formatDateAsString(debtFreeDate);
+    var outputTextString = "You will be debt free in "+debtFreeDateString+" ("+numMonths+" months from now)";
+
+    var outputTextPara = document.createElement("p");
+    outputTextPara.textContent = outputTextString;
+    outputTextDiv.appendChild(outputTextPara);
+
+    var outputTextPara2 = document.createElement("p");
+    outputTextPara2.textContent = "Total interest paid: $"+(Math.round(totalInterestPaid*100)/100).toLocaleString();
+    outputTextDiv.appendChild(outputTextPara2);
+
+    var outputTextPara3 = document.createElement("p");
+    outputTextPara3.textContent = "Total principal paid: $"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString();
+    outputTextDiv.appendChild(outputTextPara3);
+
+    var outputTextPara4 = document.createElement("p");
+    outputTextPara4.textContent = "Grand total cost: $"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString();
+    outputTextDiv.appendChild(outputTextPara4);
+
+    createSummaryTable();
+
+}
+
+function createSummaryTable(){
+    //create table
+    var summaryTable = document.createElement('table');
+    summaryTable.classList.add("summaryTable");
+
+    //Add header row with titles
+    var summaryTable1 = document.createElement('tr');
+    
+    var summaryTable1a = document.createElement('th');
+    var summaryTable1b = document.createElement('th');
+    var summaryTable1c = document.createElement('th');
+    var summaryTable1d = document.createElement('th');
+    var summaryTable1e = document.createElement('th');
+
+    summaryTable1a.textContent = "Loan Name";
+    summaryTable1b.textContent = "Debt-Free Date";
+    summaryTable1c.textContent = "Total Interest Paid";
+    summaryTable1d.textContent = "Total Principal Paid";
+    summaryTable1e.textContent = "Grand Total Cost";
+
+    summaryTable1.appendChild(summaryTable1a);
+    summaryTable1.appendChild(summaryTable1b);
+    summaryTable1.appendChild(summaryTable1c);
+    summaryTable1.appendChild(summaryTable1d);
+    summaryTable1.appendChild(summaryTable1e);
+
+    summaryTable.appendChild(summaryTable1);
+
+    var numberOfCol = 5;
+
+    for(i=0; i<=numLoans; i++) {
+
+        var tableRow = document.createElement('tr');
+        tableRow.classList.add("tableRow");
+        tableRow.setAttribute('id','row'+(i+1));        
+        summaryTable.appendChild(tableRow);
+
+        for(j=0; j<numberOfCol; j++) {
+            var tableCell = document.createElement('td');
+            tableCell.classList.add("tableCell");
+            tableCell.setAttribute('id','row'+(i+1)+'col'+(j+1));        
+            tableRow.appendChild(tableCell);
+
+            if(j === 0) {
+                if(i === numLoans){
+                    tableCell.innerHTML = "Total";                    
+                } else{
+                    tableCell.innerHTML = loanNameInputArray[i];
+                }
+            }
+
+            else if(j === 1) {
+                if(i === numLoans){
+                    tableCell.innerHTML = formatDateAsString(debtFreeDate);                    
+                } else{
+                    var currentDate = new Date();
+                    currentDate.setMonth(currentDate.getMonth()+loanPayoffMonthArray[i]);
+                    tableCell.innerHTML = formatDateAsString(currentDate);
+                }
+            }
+
+            else if(j === 2) {
+                if(i === numLoans){
+                    tableCell.innerHTML = "$"+(Math.round(totalInterestPaid*100)/100).toLocaleString();                    
+                } else{
+                    tableCell.innerHTML = "$"+(Math.round(totalInterestByLoanArray[i]*100)/100).toLocaleString();
+                }
+            }
+
+            else if(j === 3) {
+                if(i === numLoans){
+                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString();                    
+                } else{
+                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalByLoanArray[i]*100)/100).toLocaleString();
+                }
+            }
+
+            else if(j === 4) {
+                if(i === numLoans){
+                    tableCell.innerHTML = "$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString();                    
+                } else{
+                    tableCell.innerHTML = "$"+(Math.round((totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString();
+                }
+            }
+        }
+    }
+
+    summaryTableDiv.appendChild(summaryTable);
+}
+
+function createDebtTables(currentLoanNum, currentPayoffMonth){
 
     console.log("Create table "+currentLoanNum);
 
@@ -329,8 +496,7 @@ function createDebtTables(currentLoanNum){
 
     var numberOfCol = 5;
 
-
-    for(i=0; i<numMonths; i++) {
+    for(i=0; i<=currentPayoffMonth; i++) {
 
         var tableRow = document.createElement('tr');
         tableRow.classList.add("tableRow");
@@ -345,7 +511,10 @@ function createDebtTables(currentLoanNum){
             tableRow.appendChild(tableCell);
 
             if(j === 0) {
-                tableCell.innerHTML = "Month "+i; 
+                var currentMonth = new Date();
+                currentMonth.setMonth(currentMonth.getMonth()+i);
+                var currentMonthString = formatDateAsString(currentMonth);
+                tableCell.innerHTML = currentMonthString; 
             }
 
             else if(j === 1) {
@@ -386,5 +555,41 @@ function createDebtTables(currentLoanNum){
 
 }
 
+function formatDateAsString(date){
+    var month = date.getMonth();
+    //getYear gives year minus 1900
+    var year = date.getYear() + 1900;
 
+    console.log("Month: "+month);
+    console.log("Year: "+year);
+    
+    var monthLabel = "";
 
+    if(month == 0){
+        monthLabel = "Jan";
+    } else if(month == 1){
+        monthLabel = "Feb";
+    } else if(month == 2){
+        monthLabel = "Mar";
+    } else if(month == 3){
+        monthLabel = "Apr";
+    } else if(month == 4){
+        monthLabel = "May";
+    } else if(month == 5){
+        monthLabel = "Jun";
+    } else if(month == 6){
+        monthLabel = "Jul";
+    } else if(month == 7){
+        monthLabel = "Aug";
+    } else if(month == 8){
+        monthLabel = "Sep";
+    } else if(month == 9){
+        monthLabel = "Oct";
+    } else if(month == 10){
+        monthLabel = "Nov";
+    } else if(month == 11){
+        monthLabel = "Dec";
+    }
+
+    return monthLabel+"-"+year;
+}
