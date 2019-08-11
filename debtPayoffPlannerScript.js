@@ -847,7 +847,8 @@ function createSummaryTable(){
 
             if(j === 0) {
                 if(i === numLoans){
-                    tableCell.innerHTML = "Total";                    
+                    tableCell.innerHTML = "Total";
+                    tableCell.classList.add("tableTotalRow");                    
                 } else{
                     tableCell.innerHTML = loanNameInputArray[i];
                 }
@@ -855,7 +856,8 @@ function createSummaryTable(){
 
             else if(j === 1) {
                 if(i === numLoans){
-                    tableCell.innerHTML = formatDateAsString(debtFreeDate);                    
+                    tableCell.innerHTML = formatDateAsString(debtFreeDate);
+                    tableCell.classList.add("tableTotalRow");                    
                 } else{
                     var currentDate = new Date();
                     currentDate.setMonth(currentDate.getMonth()+loanPayoffMonthArray[i]);
@@ -866,6 +868,7 @@ function createSummaryTable(){
             else if(j === 2) {
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+(Math.round(totalInterestPaid*100)/100).toLocaleString();                    
+                    tableCell.classList.add("tableTotalRow");                    
                 } else{
                     tableCell.innerHTML = "$"+(Math.round(totalInterestByLoanArray[i]*100)/100).toLocaleString();
                 }
@@ -874,6 +877,7 @@ function createSummaryTable(){
             else if(j === 3) {
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString();                    
+                    tableCell.classList.add("tableTotalRow");                    
                 } else{
                     tableCell.innerHTML = "$"+(Math.round(totalPrincipalByLoanArray[i]*100)/100).toLocaleString();
                 }
@@ -882,6 +886,7 @@ function createSummaryTable(){
             else if(j === 4) {
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString();                    
+                    tableCell.classList.add("tableTotalRow");                    
                 } else{
                     tableCell.innerHTML = "$"+(Math.round((totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString();
                 }

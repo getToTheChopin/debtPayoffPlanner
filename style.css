@@ -101,11 +101,15 @@ input:hover{
     max-width:95%;
 }
 
-
-
 #loanDiv, #planDiv, #outputTextDiv, #summaryTableDiv, #chartDiv, #loanTableDiv {
     text-align:center;
     margin:auto;
+}
+
+.tableTotalRow {
+    font-weight:bold;
+    border-top: 2px solid #31D0CB;
+    border-bottom: 2px solid #31D0CB;
 }
 
 #outputTextDiv {
@@ -136,6 +140,12 @@ input:hover{
     color: #0071B3;
     background-color: white;
     cursor: pointer;
+}
+
+#addLoanButton:hover{
+    border:2px solid #0071B3;
+    color: white;
+    background-color: #0071B3;    
 }
 
 #monthlyPaymentSpan, #monthlyPaymentInput, #paymentTypeSpan {
