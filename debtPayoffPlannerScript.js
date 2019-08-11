@@ -62,6 +62,7 @@ calculateDebts();
 
 function addLoan(){
     var newRow = loanAssumptionTable.insertRow(-1);
+    var rowNum = newRow.rowIndex;
 
     var firstCell = newRow.insertCell(0);
     firstCell.innerHTML = "<span>Loan Name: </span><input type=\"text\" class=\"userInput loanNameInput\">";
@@ -75,6 +76,10 @@ function addLoan(){
     var fourthCell = newRow.insertCell(3);
     fourthCell.innerHTML = "<span>Minimum Monthly Payment ($): </span><input type=\"number\" class=\"userInput minPaymentInput\">";
 
+    var fifthCell = newRow.insertCell(4);
+    fifthCell.className = "deleteCell";
+    fifthCell.innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+rowNum+")\">&#10008</span>";
+
     var inputsArray = document.getElementsByClassName("userInput");
 
     for(i=0;i<inputsArray.length;i++) {
@@ -82,6 +87,12 @@ function addLoan(){
         console.log("add input event listener");
     }
 
+}
+
+function deleteLoan(j){
+    console.log("Delete row:" +j);
+    loanAssumptionTable.deleteRow(j);
+    refreshAnalysis();
 }
 
 function getUserInputs(){
@@ -114,7 +125,6 @@ function getUserInputs(){
 
     numLoans = inputsArray.length;
 
-
     monthlyPayment = Number(document.getElementById("monthlyPaymentInput").value);
 
     //set monthly payment user input cell to greater of current value and min payment total
@@ -128,8 +138,6 @@ function getUserInputs(){
     } else {
         paymentType = "snowball";
     }
-
-
 }
 
 function refreshAnalysis(){
@@ -156,6 +164,14 @@ function refreshAnalysis(){
     totalPrincipalPaid = 0;
 
     numMonths = 0;
+
+
+    rowArray = document.getElementsByClassName("deleteCell");
+
+    //Update row reference of delete icons in the loan assumption table
+    for(i=0; i<rowArray.length; i++){
+        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
+    }
 
     if(chartActive == false){
     
