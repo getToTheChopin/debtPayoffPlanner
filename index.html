@@ -12,8 +12,6 @@
 <body>
     <h1>Debt Payoff Planner</h1>
 
-    <p>Blah</p>
-
     <button onclick="addLoan()" id="addLoanButton">+ Add Loan</button>
 
     <div id="loanDiv">
@@ -23,9 +21,11 @@
     </div>
 
     <div id="planDiv">
-        <span>Monthly Payment: </span><input type="number" id="monthlyPaymentInput" class="userInput"><br>
-        <input type="radio" class="userInput" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br>
-        <input type="radio" class="userInput" id="snowballType" name="paymentType" value="snowball">Snowball<br>
+        <span id="monthlyPaymentSpan">Monthly Payment ($) </span><input type="number" id="monthlyPaymentInput" class="userInput input-number–noSpinners"><br>
+        <br>
+        <span id="paymentTypeSpan">Payment Type</span><br>
+        <input type="radio" class="userInput2" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br>
+        <input type="radio" class="userInput2" id="snowballType" name="paymentType" value="snowball">Snowball<br>
     </div>
 
     <div id="outputTextDiv">

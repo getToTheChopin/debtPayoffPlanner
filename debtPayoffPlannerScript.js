@@ -68,25 +68,30 @@ function addLoan(){
     var rowNum = newRow.rowIndex;
 
     var firstCell = newRow.insertCell(0);
-    firstCell.innerHTML = "<span>Loan Name: </span><input type=\"text\" class=\"userInput loanNameInput\">";
+    firstCell.innerHTML = "<span>Loan<br>Name</span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\">";
 
     var secondCell = newRow.insertCell(1);
-    secondCell.innerHTML = "<span>Loan balance ($): </span><input type=\"number\" class=\"userInput loanBalanceInput\">";
+    secondCell.innerHTML = "<span>Loan balance<br>($) </span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\">";
 
     var thirdCell = newRow.insertCell(2);
-    thirdCell.innerHTML = "<span>Annual Interest Rate (%): </span><input type=\"number\" class=\"userInput interestRateInput\">";
+    thirdCell.innerHTML = "<span>Annual Interest Rate (%)</span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\">";
 
     var fourthCell = newRow.insertCell(3);
-    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($): </span><input type=\"number\" class=\"userInput minPaymentInput\">";
+    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)</span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\">";
 
     var fifthCell = newRow.insertCell(4);
     fifthCell.className = "deleteCell";
     fifthCell.innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+rowNum+")\">&#10008</span>";
 
     var inputsArray = document.getElementsByClassName("userInput");
-
     for(i=0;i<inputsArray.length;i++) {
         inputsArray[i].addEventListener('change',refreshAnalysis, false);
+        console.log("add input event listener");
+    }
+
+    var inputsArray2 = document.getElementsByClassName("userInput2");
+    for(i=0;i<inputsArray2.length;i++) {
+        inputsArray2[i].addEventListener('change',refreshAnalysis, false);
         console.log("add input event listener");
     }
 
@@ -394,22 +399,21 @@ function showOutputs(){
     console.log("Debt free date: "+debtFreeDate);
 
     var debtFreeDateString = formatDateAsString(debtFreeDate);
-    var outputTextString = "You will be debt free in "+debtFreeDateString+" ("+numMonths+" months from now)";
 
     var outputTextPara = document.createElement("p");
-    outputTextPara.textContent = outputTextString;
+    outputTextPara.innerHTML = "You will be debt free in <span class=\"highlightText\">"+debtFreeDateString+"</span> ("+numMonths+" months from now)";
     outputTextDiv.appendChild(outputTextPara);
 
     var outputTextPara2 = document.createElement("p");
-    outputTextPara2.textContent = "Total interest paid: $"+(Math.round(totalInterestPaid*100)/100).toLocaleString();
+    outputTextPara2.innerHTML = "Total interest paid: <span class=\"highlightText\">$"+(Math.round(totalInterestPaid*100)/100).toLocaleString()+"</span>";
     outputTextDiv.appendChild(outputTextPara2);
 
     var outputTextPara3 = document.createElement("p");
-    outputTextPara3.textContent = "Total principal paid: $"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString();
+    outputTextPara3.innerHTML = "Total principal paid: <span class=\"highlightText\">$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString()+"</span>";
     outputTextDiv.appendChild(outputTextPara3);
 
     var outputTextPara4 = document.createElement("p");
-    outputTextPara4.textContent = "Grand total cost: $"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString();
+    outputTextPara4.innerHTML = "Grand total cost: <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString()+"</span>";
     outputTextDiv.appendChild(outputTextPara4);
 
     createSummaryTable();

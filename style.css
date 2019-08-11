@@ -4,25 +4,163 @@ html {
 }
 
 td {
-    border-top: 1px solid gray;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid rgb(0, 30, 87);
+	border-top: 1px solid rgb(0, 30, 87);
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+    border-collapse: collapse;
+}
+
+th {
+    padding: 5px;
+    text-align: center;
+    vertical-align:middle;
+    background-color: rgb(238, 238, 238);
+	border-collapse: collapse;
+	background-color: #C4C4C4;
+}
+
+table {
+    border-collapse: collapse;
+    margin:auto;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:vertical {
+    width: 12px;
+}
+
+::-webkit-scrollbar:horizontal {
+    height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px;  
+    background-color: #ffffff; 
+}
+
+.userInput {
+    font-weight:bold;
+    padding:1px;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+    text-align:center;
+    font-family:helvetica;
+    font-size: 0.95em;
+    width: 100px;
+	max-width:80%;
+}
+
+input.input-number–noSpinners {
+    -moz-appearance: textfield;
+    border:1px solid rgb(180, 180, 180);
+    padding: 4px 0 4px 0;
+}
+
+input.input-number–noSpinners::-webkit-inner-spin-button,
+input.input-number–noSpinners::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    border:1px solid rgb(180, 180, 180);
+    padding: 4px 0 4px 0;
+}
+
+input:hover{
+    background-color: rgb(246, 252, 255);
+    border:1px solid rgb(146, 146, 146);
+}
+
+#loanAssumptionTable{
+    font-size:0.95em;
+    width:500px;
+    max-width:95%; 
+}
+
+.summaryTable {
+    width:500px;
+    max-width:95%;   
+}
+
+.loanTable{
+    font-size:0.85em;
+    width:350px;
+    max-width:95%;
+}
+
+
+
+#loanDiv, #planDiv, #outputTextDiv, #summaryTableDiv, #chartDiv, #loanTableDiv {
+    text-align:center;
+    margin:auto;
+}
+
+#outputTextDiv {
+    width:500px;
+    max-width:95%;
+    background-color:white;
+    border: 2px solid rgb(0, 30, 87);
+    margin-top:15px;
+    margin-bottom:15px;
+    box-shadow: 4px 4px 10px grey;
+}
+
+.highlightText{
+    font-weight: bold;
+    color: rgb(0, 121, 129);
+    font-size:1.2em;
+}
+
+#addLoanButton {
+    font-size: 0.9em;
+	font-weight: bold;
+	padding: 4px 8px 4px 8px;
+	border-radius: 4px;
+    display:block;
+    text-align:center;
+    margin:auto;
+    border:2px solid #0071B3;
+    color: #0071B3;
+    background-color: white;
+    cursor: pointer;
+}
+
+#monthlyPaymentSpan, #monthlyPaymentInput, #paymentTypeSpan {
+    font-size: 1.1em;
+    font-weight: bold;
 }
 
 #totalBalanceChartDiv, #loanBalanceChartDiv, #loanPaymentChartDiv {
-    padding:1%;
-    border: 1px solid black;
+    width:95%;
+    max-width:800px;
+    padding:6px;
+    border: 2px solid rgb(0, 30, 87);
     background-color: white;
     position:relative;
     height:50vh;
-    width:92vw;
-    max-width: 900px;
+	max-height: 600px;
     margin: auto;
-    margin-top:2%;
-    margin-bottom:2%;
+	text-align: center;
+    margin-top:15px;
+    margin-bottom:15px;
+    box-shadow: 4px 4px 10px grey;
 }
 
 .deleteIcon{
-    color:red;
+    color:#B31B20;
     cursor: pointer;
 }
 
