@@ -6,6 +6,7 @@ To be added:
 - Add ability to show / hide detailed loan tables
 - Add section for what if analysis (avalanche vs snowball comparison, what if monthly payment is higher by +$1 / +$10 / +$100 / custom)
 - Error handling (loan not set, loan never pays off, etc.)
+- Code review / cleanup / comment out the console.log lines
 */
 
 var addLoanButton = document.getElementById("addLoanButton");
@@ -49,6 +50,8 @@ var chartActive = false;
 var outputTextDiv = document.getElementById("outputTextDiv");
 var summaryTableDiv = document.getElementById("summaryTableDiv"); 
 var loanTableDiv = document.getElementById("loanTableDiv");
+
+var loanTableDisplayToggleArray = [];
 
 //Final answers
 var debtFreeDate = new Date();
@@ -377,9 +380,8 @@ function calculateDebts(){
     }
 
     //Create loan tables
-    console.log("Number of loans: "+numLoans);
     for(x=0; x<numLoans; x++){
-        console.log("X value: "+x);
+        loanTableDisplayToggleArray[x] = 0;
         createDebtTables(x, loanPayoffMonthArray[x]);
     }
 }
@@ -891,17 +893,42 @@ function createDebtTables(currentLoanNum, currentPayoffMonth){
     console.log("Create table "+currentLoanNum);
 
     //create table title
-    var para = document.createElement("p");
-    para.classList.add("loanTableTitle");
+    var titleSpan = document.createElement("span");
+    titleSpan.classList.add("loanTableTitle");
 
-    var title = document.createTextNode(loanNameInputArray[currentLoanNum]+" - Payment Table");
-    para.appendChild(title);
+    var title = document.createTextNode(loanNameInputArray[currentLoanNum]+" - Payment Table   ");
+    titleSpan.appendChild(title);
+    loanTableDiv.appendChild(titleSpan);
 
-    loanTableDiv.appendChild(para);
+    //place plus or minus symbol beside the title for the loan table, allows user to toggle the table on or off
+    var symbolSpan = document.createElement("span");
+    symbolSpan.classList.add("loanTableSymbol");
+    symbolSpan.innerHTML = "&#x002B;"
+    loanTableDiv.appendChild(symbolSpan);
+    symbolSpan.onclick = function(){
+        var currentTable = document.getElementById("loanTable"+currentLoanNum);
+        console.log("Toggle loan table: "+currentLoanNum);
+        if(loanTableDisplayToggleArray[currentLoanNum] == 0){
+            console.log("Change display style to block");
+            currentTable.style.display = "block";
+            loanTableDisplayToggleArray[currentLoanNum] = 1;
+            this.innerHTML = "&#8722;";
+        } else if(loanTableDisplayToggleArray[currentLoanNum] == 1){
+            console.log("Change display style to none");
+            currentTable.style.display = "none";
+            loanTableDisplayToggleArray[currentLoanNum] = 0;
+            this.innerHTML = "&#x002B;"
+        }
+    };
+
+    var breakSpan = document.createElement("span");
+    breakSpan.innerHTML = "<br><br>";
+    loanTableDiv.appendChild(breakSpan);
 
     //create table
     var loanTable = document.createElement('table');
     loanTable.classList.add("loanTable");
+    loanTable.setAttribute("id", "loanTable"+currentLoanNum);
 
     //Add header row with titles
     var loanTable1 = document.createElement('tr');
@@ -982,11 +1009,11 @@ function createDebtTables(currentLoanNum, currentPayoffMonth){
             }
         }
     }
-
     loanTableDiv.appendChild(loanTable);
-
+    loanTable.style.display = "none";
 }
 
+//formats date value as mmm-yyyy
 function formatDateAsString(date){
     var month = date.getMonth();
     //getYear gives year minus 1900

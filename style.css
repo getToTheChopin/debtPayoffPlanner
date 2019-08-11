@@ -25,3 +25,11 @@ td {
     color:red;
     cursor: pointer;
 }
+
+.loanTableSymbol{
+    cursor:pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: 1px solid black;
+    padding: 2px;
+}
