@@ -12,40 +12,60 @@
 <body>
     <h1>Debt Payoff Planner</h1>
 
-    <button onclick="addLoan()" id="addLoanButton">+ Add Loan</button>
+    <h2>Loan Inputs</h2>
 
     <div id="loanDiv">
+
+        <button onclick="addLoan()" id="addLoanButton">+ Add Loan</button>
+
         <table id="loanAssumptionTable">
 
         </table>
     </div>
 
     <div id="planDiv">
-        <span id="monthlyPaymentSpan">Monthly Payment ($) </span><input type="number" id="monthlyPaymentInput" class="userInput input-number–noSpinners"><br>
-        <br>
-        <span id="paymentTypeSpan">Payment Type</span><br>
-        <input type="radio" class="userInput2" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br>
-        <input type="radio" class="userInput2" id="snowballType" name="paymentType" value="snowball">Snowball<br>
+        <table id="planInputTable">
+            <tr>
+                <td><span id="monthlyPaymentSpan">Monthly Payment ($) </span></td>
+                <td><input type="number" id="monthlyPaymentInput" class="userInput input-number–noSpinners" step=0.01 min=0></td>
+            </tr>
+
+            <tr>
+                <td><span id="paymentTypeSpan">Payment Type</span></td>
+                <td><input type="radio" class="userInput2" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br><input type="radio" class="userInput2" id="snowballType" name="paymentType" value="snowball">Snowball</td>
+            </tr>
+        </table>
     </div>
 
-    <div id="outputTextDiv">
+    <div id="userMessageDiv">
 
     </div>
 
-    <div id="summaryTableDiv">
+    <h2>Outputs</h2>
+
+    <div id="outputErrorDiv">
+        <p>Alert! As per my calculations, at least one of your loans will not be paid off within the next 50 years.</p>
+        <p>Perhaps something is wrong... please double check your inputs.</p>
+    </div>
+
+    <div id="outputTextDiv" tabindex="0">
+
+    </div>
+
+    <div id="summaryTableDiv" tabindex="0">
 
     </div>
 
     <div id="chartDiv">
-        <div id="totalBalanceChartDiv">
+        <div id="totalBalanceChartDiv" tabindex="0">
             <canvas id="totalBalanceChart"></canvas>
         </div>
 
-        <div id="loanBalanceChartDiv">
+        <div id="loanBalanceChartDiv" tabindex="0">
             <canvas id="loanBalanceChart"></canvas>
         </div>
 
-        <div id="loanPaymentChartDiv">
+        <div id="loanPaymentChartDiv" tabindex="0">
             <canvas id="loanPaymentChart"></canvas>
         </div>
     </div>

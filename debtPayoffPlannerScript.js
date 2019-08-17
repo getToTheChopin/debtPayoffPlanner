@@ -25,6 +25,8 @@ var paymentType;
 
 var numLoans = 0;
 
+var nilInputCount = 0;
+
 var loanBOPArray = [];
 var loanPaymentArray = [];
 var loanInterestPaidArray = [];
@@ -47,8 +49,12 @@ var chart2;
 var chart3;
 var chartActive = false;
 
+var userMessageDiv = document.getElementById("userMessageDiv");
+
+var outputErrorDiv = document.getElementById("outputErrorDiv");
 var outputTextDiv = document.getElementById("outputTextDiv");
 var summaryTableDiv = document.getElementById("summaryTableDiv"); 
+var chartDiv = document.getElementById("chartDiv"); 
 var loanTableDiv = document.getElementById("loanTableDiv");
 
 var loanTableDisplayToggleArray = [];
@@ -61,6 +67,7 @@ var totalPrincipalPaid = 0;
 
 //main method
 getUserInputs();
+displayUserMessage();
 calculateDebts();
 
 function addLoan(){
@@ -68,16 +75,16 @@ function addLoan(){
     var rowNum = newRow.rowIndex;
 
     var firstCell = newRow.insertCell(0);
-    firstCell.innerHTML = "<span>Loan<br>Name</span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\">";
+    firstCell.innerHTML = "<span>Loan<br>Name</span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\" placeholder=\"Student loan\">";
 
     var secondCell = newRow.insertCell(1);
-    secondCell.innerHTML = "<span>Loan balance<br>($) </span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\">";
+    secondCell.innerHTML = "<span>Loan balance<br>($) </span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\" placeholder=\"8000\" step=\"0.01\" min=\"0\">";
 
     var thirdCell = newRow.insertCell(2);
-    thirdCell.innerHTML = "<span>Annual Interest Rate (%)</span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\">";
+    thirdCell.innerHTML = "<span>Annual Interest Rate (%)</span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\" placeholder=\"6\" step=\"0.01\" min=\"0\">";
 
     var fourthCell = newRow.insertCell(3);
-    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)</span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\">";
+    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)</span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\" placeholder=\"50\" step=\"0.01\" min=\"0\">";
 
     var fifthCell = newRow.insertCell(4);
     fifthCell.className = "deleteCell";
@@ -95,6 +102,8 @@ function addLoan(){
         console.log("add input event listener");
     }
 
+    refreshAnalysis();
+
 }
 
 function deleteLoan(j){
@@ -104,6 +113,8 @@ function deleteLoan(j){
 }
 
 function getUserInputs(){
+
+    outputErrorDiv.classList.add("hide");
 
     var inputsArray = document.getElementsByClassName("loanNameInput");
 
@@ -115,12 +126,22 @@ function getUserInputs(){
 
     for(i=0; i<inputsArray.length; i++){
         loanBalanceInputArray[i] = Number(inputsArray[i].value);
+        
+        //check if input hasn't been set yet
+        if(!inputsArray[i].value){
+            nilInputCount ++;
+        }
     }
 
     inputsArray = document.getElementsByClassName("interestRateInput");
 
     for(i=0; i<inputsArray.length; i++){
         interestRateInputArray[i] = Number(inputsArray[i].value)/100;
+
+        //check if input hasn't been set yet
+        if(!inputsArray[i].value){
+            nilInputCount ++;
+        }
     }
 
     inputsArray = document.getElementsByClassName("minPaymentInput");
@@ -129,6 +150,11 @@ function getUserInputs(){
     for(i=0; i<inputsArray.length; i++){
         minPaymentInputArray[i] = Number(inputsArray[i].value);
         minPaymentTotal += Number(inputsArray[i].value);
+    
+        //check if input hasn't been set yet
+        if(!inputsArray[i].value){
+            nilInputCount ++;
+        }
     }
 
     numLoans = inputsArray.length;
@@ -173,6 +199,9 @@ function refreshAnalysis(){
 
     numMonths = 0;
 
+    nilInputCount = 0;
+
+    outputErrorDiv.classList.add("hide");
 
     rowArray = document.getElementsByClassName("deleteCell");
 
@@ -190,13 +219,59 @@ function refreshAnalysis(){
     }
 
     getUserInputs();
+    displayUserMessage();
     calculateDebts();
+}
+
+function displayUserMessage(){
+
+    console.log("Nil input count: "+nilInputCount);
+
+    if(numLoans == 0){
+        var noLoanPara = document.createElement("p");
+        noLoanPara.innerHTML = "Click the <span id=\"addLoanSpan\">+ Add Loan</span> button above to get started!";
+        userMessageDiv.innerHTML = "";
+        userMessageDiv.appendChild(noLoanPara);
+        userMessageDiv.classList.remove("hide");
+
+        outputTextDiv.classList.add("hide");
+        summaryTableDiv.classList.add("hide");
+        chartDiv.classList.add("hide");
+        loanTableDiv.classList.add("hide");
+
+    } else if(nilInputCount > 0){
+        var nilInputPara = document.createElement("p");
+        nilInputPara.innerHTML = "Missing data... please fill in the loan inputs above!";
+        userMessageDiv.innerHTML = "";
+        userMessageDiv.appendChild(nilInputPara);
+        userMessageDiv.classList.remove("hide");
+
+        outputTextDiv.classList.add("hide");
+        summaryTableDiv.classList.add("hide");
+        chartDiv.classList.add("hide");
+        loanTableDiv.classList.add("hide");        
+
+    } else {
+        userMessageDiv.innerHTML = "";
+
+        userMessageDiv.classList.add("hide");
+
+        outputTextDiv.classList.remove("hide");
+        summaryTableDiv.classList.remove("hide");
+        chartDiv.classList.remove("hide");
+        loanTableDiv.classList.remove("hide");       
+    }
 }
 
 function calculateDebts(){
 
     //Exit if monthly payment is not set
     if(monthlyPayment == 0 || isNaN(monthlyPayment)){
+        return;
+    }
+
+    //Exit if loan inputs are not filled in
+    if(nilInputCount > 0){
         return;
     }
 
@@ -290,6 +365,11 @@ function calculateDebts(){
 
         if(zeroCount == numLoans){
             break;
+        }
+
+        //display error message if there is at least one loan not paid off by the end of the calc period
+        if(i == maxMonths-1){
+            outputErrorDiv.classList.remove("hide");
         }
 
         //Algorithm to allocate excess payment amongst the outstanding loans
@@ -405,15 +485,15 @@ function showOutputs(){
     outputTextDiv.appendChild(outputTextPara);
 
     var outputTextPara2 = document.createElement("p");
-    outputTextPara2.innerHTML = "Total interest paid: <span class=\"highlightText\">$"+(Math.round(totalInterestPaid*100)/100).toLocaleString()+"</span>";
+    outputTextPara2.innerHTML = "Total interest paid: <span class=\"highlightText\">$"+(Math.round(totalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
     outputTextDiv.appendChild(outputTextPara2);
 
     var outputTextPara3 = document.createElement("p");
-    outputTextPara3.innerHTML = "Total principal paid: <span class=\"highlightText\">$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString()+"</span>";
+    outputTextPara3.innerHTML = "Total principal paid: <span class=\"highlightText\">$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
     outputTextDiv.appendChild(outputTextPara3);
 
     var outputTextPara4 = document.createElement("p");
-    outputTextPara4.innerHTML = "Grand total cost: <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString()+"</span>";
+    outputTextPara4.innerHTML = "Grand total cost: <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
     outputTextDiv.appendChild(outputTextPara4);
 
     createSummaryTable();
@@ -473,7 +553,7 @@ function showOutputs(){
                         if (label) {
                             label += ': ';
                         }
-                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        label += '$'+tooltipItem.yLabel.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                         return label;
                     }
                 },
@@ -484,7 +564,7 @@ function showOutputs(){
                     ticks: {
                         // Include a dollar sign in the ticks and add comma formatting
                         callback: function(value, index, values) {
-                            return '$' + value.toFixed(2);
+                            return '$' + (value.toFixed(0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+" ";
                         },
 
                         fontColor: "rgb(56,56,56)",
@@ -508,8 +588,9 @@ function showOutputs(){
                 xAxes: [{
                     ticks: {
                         userCallback: function(item, index) {
-                            if (!(index % tickSpacing)) return item;
+                            if (!(index % tickSpacing)) return item+" ";
                         },
+
                         autoSkip: false,
                         fontColor: "rgb(56,56,56)",
 
@@ -596,7 +677,7 @@ function showOutputs(){
                         if (label) {
                             label += ': ';
                         }
-                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        label += '$'+tooltipItem.yLabel.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                         return label;
                     }
                 },
@@ -607,7 +688,7 @@ function showOutputs(){
                     ticks: {
                         // Include a dollar sign in the ticks and add comma formatting
                         callback: function(value, index, values) {
-                            return '$' + value.toFixed(2);
+                            return '$' + (value.toFixed(0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+" ";
                         },
 
                         fontColor: "rgb(56,56,56)",
@@ -631,7 +712,7 @@ function showOutputs(){
                 xAxes: [{
                     ticks: {
                         userCallback: function(item, index) {
-                            if (!(index % tickSpacing)) return item;
+                            if (!(index % tickSpacing)) return item+" ";
                         },
                         autoSkip: false,
                         fontColor: "rgb(56,56,56)",
@@ -714,7 +795,7 @@ function showOutputs(){
                         if (label) {
                             label += ': ';
                         }
-                        label += '$'+tooltipItem.yLabel.toLocaleString();
+                        label += '$'+tooltipItem.yLabel.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                         return label;
                     }
                 },
@@ -725,7 +806,7 @@ function showOutputs(){
                     ticks: {
                         // Include a dollar sign in the ticks and add comma formatting
                         callback: function(value, index, values) {
-                            return '$' + value.toFixed(2);
+                            return '$' + (value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+" ";
                         },
 
                         fontColor: "rgb(56,56,56)",
@@ -752,7 +833,7 @@ function showOutputs(){
                 xAxes: [{
                     ticks: {
                         userCallback: function(item, index) {
-                            if (!(index % tickSpacing)) return item;
+                            if (!(index % tickSpacing)) return item+" ";
                         },
                         autoSkip: false,
                         fontColor: "rgb(56,56,56)",
@@ -866,29 +947,35 @@ function createSummaryTable(){
             }
 
             else if(j === 2) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === numLoans){
-                    tableCell.innerHTML = "$"+(Math.round(totalInterestPaid*100)/100).toLocaleString();                    
+                    tableCell.innerHTML = "$"+(Math.round(totalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
                     tableCell.classList.add("tableTotalRow");                    
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(totalInterestByLoanArray[i]*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+(Math.round(totalInterestByLoanArray[i]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
 
             else if(j === 3) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === numLoans){
-                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString();                    
+                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
                     tableCell.classList.add("tableTotalRow");                    
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalByLoanArray[i]*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+(Math.round(totalPrincipalByLoanArray[i]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
 
             else if(j === 4) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === numLoans){
-                    tableCell.innerHTML = "$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString();                    
+                    tableCell.innerHTML = "$"+((Math.round(totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
                     tableCell.classList.add("tableTotalRow");                    
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round((totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+((Math.round(totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
         }
@@ -986,34 +1073,43 @@ function createDebtTables(currentLoanNum, currentPayoffMonth){
             }
 
             else if(j === 1) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === 0){
                     
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(loanPaymentArray[currentLoanNum][i-1]*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+(Math.round(loanPaymentArray[currentLoanNum][i-1]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
 
             else if(j === 2) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === 0){
                     
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(loanInterestPaidArray[currentLoanNum][i-1]*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+(Math.round(loanInterestPaidArray[currentLoanNum][i-1]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
 
             else if(j === 3) {
+                tableCell.classList.add("rightAlignCell");
+
                 if(i === 0){
                     
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(loanPrincipalPaidArray[currentLoanNum][i-1]*100)/100).toLocaleString();
+                    tableCell.innerHTML = "$"+(Math.round(loanPrincipalPaidArray[currentLoanNum][i-1]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }         
             }
 
             else if(j === 4) {
+                tableCell.classList.add("rightAlignCell");
+                tableCell.classList.add("loanBalanceCell");
+
                 if(i === 0){
-                    tableCell.innerHTML = "$"+(Math.round(loanBOPArray[currentLoanNum][i]*100)/100).toLocaleString();               
+                    tableCell.innerHTML = "$"+(Math.round(loanBOPArray[currentLoanNum][i]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });               
                 } else{
-                    tableCell.innerHTML = "$"+(Math.round(loanEOPArray[currentLoanNum][i-1]*100)/100).toLocaleString();               
+                    tableCell.innerHTML = "$"+(Math.round(loanEOPArray[currentLoanNum][i-1]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });               
                 }             
             }
         }
