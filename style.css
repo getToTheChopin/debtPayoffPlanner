@@ -25,8 +25,6 @@ th {
 table {
     border-collapse: collapse;
     margin:auto;
-    margin-top:8px;
-    margin-bottom:8px;
 }
 
 ::-webkit-scrollbar {
@@ -105,12 +103,14 @@ input:hover{
     width:500px;
     max-width:95%;
     border:2px solid #0071B3;
+    margin-top:20px;
+    margin-bottom:20px;
 }
 
 #planInputTable{
     width:500px;
     max-width:95%;
-    border:2px solid rgb(0, 121, 129);   
+    border:2px solid rgb(114, 0, 129);   
 }
 
 .summaryTable {
@@ -126,6 +126,7 @@ input:hover{
     font-size:0.85em;
     width:350px;
     max-width:95%;
+    margin-bottom: 25px;
 }
 
 .loanBalanceCell{
@@ -192,23 +193,23 @@ input:hover{
 #userMessageDiv {
     width:500px;
     max-width:95%;
-    background-color:white;
-    border: 2px solid rgb(100, 100, 100);
+    border: 1px dashed rgb(100, 100, 100);
     margin-top:15px;
     margin-bottom:15px;
     text-align:center;
     margin:auto;
     font-size: 1.2em;
+    background-image: linear-gradient(to right top, #ebebeb, #f0f0f0, #f5f5f5, #fafafa, #ffffff);
 }
 
 #outputErrorDiv{
     width:500px;
     max-width:95%;
-    background-color:white;
-    border: 4px solid #B31B20;
+    background-image: linear-gradient(to right top, #ffdbdb, #fee4eb, #fbedf6, #fbf7fc, #ffffff);
+    border: 2px solid #B31B20;
+    padding:2%;
     margin:auto;
     text-align:center;
-    box-shadow: 4px 4px 10px grey;
     font-size: 1.2em;
 }
 
@@ -238,6 +239,10 @@ input:hover{
     cursor: pointer;
 }
 
+.loanTableTitle {
+    margin-top: 2%;
+}
+
 .loanTableSymbol{
     cursor:pointer;
     font-size: 1.1em;
@@ -245,6 +250,7 @@ input:hover{
     border: 1px solid rgb(0, 121, 129);
     padding: 2px;
     color: rgb(0, 121, 129);
+    margin-top:10px;
 }
 
 .hide {

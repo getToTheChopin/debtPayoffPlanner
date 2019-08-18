@@ -49,6 +49,8 @@ var chart2;
 var chart3;
 var chartActive = false;
 
+var whatIfAnalysisToggle = false;
+
 var userMessageDiv = document.getElementById("userMessageDiv");
 
 var outputErrorDiv = document.getElementById("outputErrorDiv");
@@ -61,6 +63,7 @@ var loanTableDisplayToggleArray = [];
 
 //Final answers
 var debtFreeDate = new Date();
+var debtFreeDateString = "";
 var totalInterestPaid = 0;
 var totalPrincipalPaid = 0;
 
@@ -69,6 +72,7 @@ var totalPrincipalPaid = 0;
 getUserInputs();
 displayUserMessage();
 calculateDebts();
+whatIfAnalysis();
 
 function addLoan(){
     var newRow = loanAssumptionTable.insertRow(-1);
@@ -177,31 +181,7 @@ function getUserInputs(){
 function refreshAnalysis(){
     console.log("refresh analysis");
 
-    loanBOPArray.length = 0;
-    loanPaymentArray.length = 0;
-    loanInterestPaidArray.length = 0;
-    loanPrincipalPaidArray.length = 0;
-    loanEOPArray.length = 0;
-    
-    loanPayoffMonthArray.length = 0;
-    monthLabelArray.length = 0;
-
-    totalDebtBOPArray.length = 0;
-    totalDebtEOPArray.length = 0;
-
-    outputTextDiv.innerHTML = "";
-    summaryTableDiv.innerHTML = "";
-    loanTableDiv.innerHTML = "";
-
-    debtFreeDate = new Date();
-    totalInterestPaid = 0;
-    totalPrincipalPaid = 0;
-
-    numMonths = 0;
-
-    nilInputCount = 0;
-
-    outputErrorDiv.classList.add("hide");
+    cleanAnalysis();
 
     rowArray = document.getElementsByClassName("deleteCell");
 
@@ -221,6 +201,48 @@ function refreshAnalysis(){
     getUserInputs();
     displayUserMessage();
     calculateDebts();
+    whatIfAnalysis();
+}
+
+function cleanAnalysis(){
+    loanBOPArray.length = 0;
+    loanPaymentArray.length = 0;
+    loanInterestPaidArray.length = 0;
+    loanPrincipalPaidArray.length = 0;
+    loanEOPArray.length = 0;
+    
+    loanPayoffMonthArray.length = 0;
+    monthLabelArray.length = 0;
+
+    totalDebtBOPArray.length = 0;
+    totalDebtEOPArray.length = 0;
+
+    debtFreeDateString = "";
+
+    debtFreeDate = new Date();
+    totalInterestPaid = 0;
+    totalPrincipalPaid = 0;
+
+    numMonths = 0;
+
+    nilInputCount = 0;
+
+    if(whatIfAnalysisToggle == false){
+        outputTextDiv.innerHTML = "";
+        summaryTableDiv.innerHTML = "";
+        loanTableDiv.innerHTML = "";
+        outputErrorDiv.classList.add("hide");
+    }
+
+    //reset what if analysis tables
+    document.getElementById("avalancheTotalInterestPaid").innerHTML = "";
+    document.getElementById("snowballTotalInterestPaid").innerHTML = "";
+    document.getElementById("differenceTotalInterestPaid").innerHTML = "";
+
+    document.getElementById("avalancheDebtFreeDate").innerHTML = "";
+    document.getElementById("snowballDebtFreeDate").innerHTML = "";
+    document.getElementById("differenceDebtFreeDate").innerHTML = "";
+
 }
 
 function displayUserMessage(){
@@ -275,14 +297,6 @@ function calculateDebts(){
         return;
     }
 
-    console.log("Monthly Payment: "+monthlyPayment);
-    console.log("Payment Type: "+paymentType);
-
-    console.log(loanNameInputArray);
-    console.log(loanBalanceInputArray);
-    console.log(interestRateInputArray);
-    console.log(minPaymentInputArray);
-
     var selectedRanking = [];
 
     var avalancheRanking = [];
@@ -315,7 +329,7 @@ function calculateDebts(){
 
     for(i=0; i<maxMonths; i++){
 
-        console.log("Month count: "+i);
+        //console.log("Month count: "+i);
 
         totalDebtBOPArray[i] = 0;
         totalDebtEOPArray[i] = 0;
@@ -395,7 +409,7 @@ function calculateDebts(){
             selectedRanking = snowballRankingUnique.slice();
         }
 
-        console.log("Selected Ranking: "+selectedRanking);
+        //console.log("Selected Ranking: "+selectedRanking);
 
         var currentMonthEligibleExcessArraySorted = [];
  
@@ -407,7 +421,7 @@ function calculateDebts(){
         var excessPaymentArraySorted = [];
         var excessPaymentRunningTotal = 0;
 
-        console.log("Excess Payment: "+excessPayment);
+        //console.log("Excess Payment: "+excessPayment);
 
         for(m=0; m<currentMonthEligibleExcessArraySorted.length; m++){
             var currentExcessPaymentAllocation;
@@ -430,7 +444,7 @@ function calculateDebts(){
             currentMonthLoanPaymentArray[p] = adjMinPaymentArray[p] + excessPaymentArrayUserOrder[p];
         }
 
-        console.log("Total Loan Payment array: "+currentMonthLoanPaymentArray);  
+        //console.log("Total Loan Payment array: "+currentMonthLoanPaymentArray);  
 
         for(q=0; q<numLoans; q++){
 
@@ -454,6 +468,15 @@ function calculateDebts(){
 
     numMonths = loanBOPArray[0].length-1;
 
+    //calc final debt free date
+    debtFreeDate.setMonth(debtFreeDate.getMonth() + numMonths);
+    debtFreeDateString = formatDateAsString(debtFreeDate);
+
+    //exit loop if what if analysis is being run, so that charts and tables do not re-populate
+    if(whatIfAnalysisToggle == true){
+        return;
+    }
+
     //display final answer outputs
     showOutputs();
 
@@ -474,12 +497,6 @@ function calculateDebts(){
 function showOutputs(){
 
     //fill outputTextDiv
-    console.log("Debt free date: "+debtFreeDate);
-    debtFreeDate.setMonth(debtFreeDate.getMonth() + numMonths);
-    console.log("Debt free date: "+debtFreeDate);
-
-    var debtFreeDateString = formatDateAsString(debtFreeDate);
-
     var outputTextPara = document.createElement("p");
     outputTextPara.innerHTML = "You will be debt free in <span class=\"highlightText\">"+debtFreeDateString+"</span> ("+numMonths+" months from now)";
     outputTextDiv.appendChild(outputTextPara);
@@ -986,8 +1003,6 @@ function createSummaryTable(){
 
 function createDebtTables(currentLoanNum, currentPayoffMonth){
 
-    console.log("Create table "+currentLoanNum);
-
     //create table title
     var titleSpan = document.createElement("span");
     titleSpan.classList.add("loanTableTitle");
@@ -1003,14 +1018,14 @@ function createDebtTables(currentLoanNum, currentPayoffMonth){
     loanTableDiv.appendChild(symbolSpan);
     symbolSpan.onclick = function(){
         var currentTable = document.getElementById("loanTable"+currentLoanNum);
-        console.log("Toggle loan table: "+currentLoanNum);
+        //console.log("Toggle loan table: "+currentLoanNum);
         if(loanTableDisplayToggleArray[currentLoanNum] == 0){
-            console.log("Change display style to block");
+            //console.log("Change display style to block");
             currentTable.style.display = "block";
             loanTableDisplayToggleArray[currentLoanNum] = 1;
             this.innerHTML = "&#8722;";
         } else if(loanTableDisplayToggleArray[currentLoanNum] == 1){
-            console.log("Change display style to none");
+            //console.log("Change display style to none");
             currentTable.style.display = "none";
             loanTableDisplayToggleArray[currentLoanNum] = 0;
             this.innerHTML = "&#x002B;"
@@ -1123,9 +1138,6 @@ function formatDateAsString(date){
     var month = date.getMonth();
     //getYear gives year minus 1900
     var year = date.getYear() + 1900;
-
-    console.log("Month: "+month);
-    console.log("Year: "+year);
     
     var monthLabel = "";
 
@@ -1156,4 +1168,72 @@ function formatDateAsString(date){
     }
 
     return monthLabel+"-"+year;
+}
+
+function whatIfAnalysis(){
+
+    //avalanche vs snowball analysis
+
+    paymentTypeCopy = paymentType;
+    monthlyPaymentCopy = monthlyPayment;
+    
+    whatIfAnalysisToggle = true;
+
+    var avalancheTotalInterest = 0;
+    var snowballTotalInterest = 0;
+    var differenceTotalInterest = 0;
+
+    var avalancheDebtFreeDateString = "";
+    var snowballDebtFreeDateString = "";
+
+    var avalancheNumMonths = 0;
+    var snowballNumMonths = 0;
+    var differenceNumMonths = 0;
+
+    if(paymentType == "avalanche"){
+        avalancheTotalInterest = totalInterestPaid;
+        avalancheDebtFreeDateString = debtFreeDateString;
+        avalancheNumMonths = numMonths;
+
+        cleanAnalysis();
+        getUserInputs();
+        paymentType = "snowball";
+        calculateDebts();
+
+        snowballTotalInterest = totalInterestPaid;
+        snowballDebtFreeDateString = debtFreeDateString;
+        snowballNumMonths = numMonths;
+    } else {
+        snowballTotalInterest = totalInterestPaid;
+        snowballDebtFreeDateString = debtFreeDateString;
+        snowballNumMonths = numMonths;
+
+        cleanAnalysis();
+        getUserInputs();
+        paymentType = "avalanche";
+        calculateDebts();
+
+        avalancheTotalInterest = totalInterestPaid;
+        avalancheDebtFreeDateString = debtFreeDateString;
+        avalancheNumMonths = numMonths;
+    }
+
+    differenceTotalInterest = snowballTotalInterest - avalancheTotalInterest;
+    differenceNumMonths = snowballNumMonths - avalancheNumMonths;
+
+    //fill avalanche vs snowball table
+    document.getElementById("avalancheTotalInterestPaid").innerHTML = "$"+(Math.round(avalancheTotalInterest*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("snowballTotalInterestPaid").innerHTML = "$"+(Math.round(snowballTotalInterest*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("differenceTotalInterestPaid").innerHTML = "$"+(Math.round(differenceTotalInterest*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+
+    document.getElementById("avalancheDebtFreeDate").innerHTML = avalancheDebtFreeDateString;
+    document.getElementById("snowballDebtFreeDate").innerHTML = snowballDebtFreeDateString;
+    document.getElementById("differenceDebtFreeDate").innerHTML = differenceNumMonths + " months";
+
+
+    //reset inputs to status quo values
+    paymentType = paymentTypeCopy;
+    monthlyPayment = monthlyPaymentCopy;
+    whatIfAnalysisToggle = false;
+
 }
