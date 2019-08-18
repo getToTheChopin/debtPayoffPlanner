@@ -53,6 +53,8 @@ var whatIfAnalysisToggle = false;
 
 var userMessageDiv = document.getElementById("userMessageDiv");
 
+var outputMasterDiv = document.getElementById("outputMasterDiv");
+
 var outputErrorDiv = document.getElementById("outputErrorDiv");
 var outputTextDiv = document.getElementById("outputTextDiv");
 var summaryTableDiv = document.getElementById("summaryTableDiv"); 
@@ -232,16 +234,36 @@ function cleanAnalysis(){
         summaryTableDiv.innerHTML = "";
         loanTableDiv.innerHTML = "";
         outputErrorDiv.classList.add("hide");
+
+        //reset what if analysis tables
+        document.getElementById("avalancheTotalInterestPaid").innerHTML = "";
+        document.getElementById("snowballTotalInterestPaid").innerHTML = "";
+        document.getElementById("differenceTotalInterestPaid").innerHTML = "";
+
+        document.getElementById("avalancheDebtFreeDate").innerHTML = "";
+        document.getElementById("snowballDebtFreeDate").innerHTML = "";
+        document.getElementById("differenceDebtFreeDate").innerHTML = "";
+
+        document.getElementById("newMonthlyPayment1").innerHTML = "";
+        document.getElementById("newTotalInterestPaid1").innerHTML = "";
+        document.getElementById("newDebtFreeDate1").innerHTML = "";
+        
+        document.getElementById("newMonthlyPayment2").innerHTML = "";
+        document.getElementById("newTotalInterestPaid2").innerHTML = "";
+        document.getElementById("newDebtFreeDate2").innerHTML = "";
+        
+        document.getElementById("newMonthlyPayment3").innerHTML = "";
+        document.getElementById("newTotalInterestPaid3").innerHTML = "";
+        document.getElementById("newDebtFreeDate3").innerHTML = "";
+        
+        document.getElementById("newMonthlyPayment4").innerHTML = "";
+        document.getElementById("newTotalInterestPaid4").innerHTML = "";
+        document.getElementById("newDebtFreeDate4").innerHTML = "";
+        
+        document.getElementById("newMonthlyPayment5").innerHTML = "";
+        document.getElementById("newTotalInterestPaid5").innerHTML = "";
+        document.getElementById("newDebtFreeDate5").innerHTML = "";
     }
-
-    //reset what if analysis tables
-    document.getElementById("avalancheTotalInterestPaid").innerHTML = "";
-    document.getElementById("snowballTotalInterestPaid").innerHTML = "";
-    document.getElementById("differenceTotalInterestPaid").innerHTML = "";
-
-    document.getElementById("avalancheDebtFreeDate").innerHTML = "";
-    document.getElementById("snowballDebtFreeDate").innerHTML = "";
-    document.getElementById("differenceDebtFreeDate").innerHTML = "";
 
 }
 
@@ -256,10 +278,7 @@ function displayUserMessage(){
         userMessageDiv.appendChild(noLoanPara);
         userMessageDiv.classList.remove("hide");
 
-        outputTextDiv.classList.add("hide");
-        summaryTableDiv.classList.add("hide");
-        chartDiv.classList.add("hide");
-        loanTableDiv.classList.add("hide");
+        outputMasterDiv.classList.add("hide");
 
     } else if(nilInputCount > 0){
         var nilInputPara = document.createElement("p");
@@ -268,20 +287,15 @@ function displayUserMessage(){
         userMessageDiv.appendChild(nilInputPara);
         userMessageDiv.classList.remove("hide");
 
-        outputTextDiv.classList.add("hide");
-        summaryTableDiv.classList.add("hide");
-        chartDiv.classList.add("hide");
-        loanTableDiv.classList.add("hide");        
+        outputMasterDiv.classList.add("hide");  
 
     } else {
         userMessageDiv.innerHTML = "";
 
         userMessageDiv.classList.add("hide");
 
-        outputTextDiv.classList.remove("hide");
-        summaryTableDiv.classList.remove("hide");
-        chartDiv.classList.remove("hide");
-        loanTableDiv.classList.remove("hide");       
+        outputMasterDiv.classList.remove("hide");
+            
     }
 }
 
@@ -946,7 +960,7 @@ function createSummaryTable(){
             if(j === 0) {
                 if(i === numLoans){
                     tableCell.innerHTML = "Total";
-                    tableCell.classList.add("tableTotalRow");                    
+                    tableCell.classList.add("tableHighlightRow");                    
                 } else{
                     tableCell.innerHTML = loanNameInputArray[i];
                 }
@@ -955,7 +969,7 @@ function createSummaryTable(){
             else if(j === 1) {
                 if(i === numLoans){
                     tableCell.innerHTML = formatDateAsString(debtFreeDate);
-                    tableCell.classList.add("tableTotalRow");                    
+                    tableCell.classList.add("tableHighlightRow");                    
                 } else{
                     var currentDate = new Date();
                     currentDate.setMonth(currentDate.getMonth()+loanPayoffMonthArray[i]);
@@ -968,7 +982,7 @@ function createSummaryTable(){
 
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+(Math.round(totalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
-                    tableCell.classList.add("tableTotalRow");                    
+                    tableCell.classList.add("tableHighlightRow");                    
                 } else{
                     tableCell.innerHTML = "$"+(Math.round(totalInterestByLoanArray[i]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
@@ -979,7 +993,7 @@ function createSummaryTable(){
 
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
-                    tableCell.classList.add("tableTotalRow");                    
+                    tableCell.classList.add("tableHighlightRow");                    
                 } else{
                     tableCell.innerHTML = "$"+(Math.round(totalPrincipalByLoanArray[i]*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
@@ -990,7 +1004,7 @@ function createSummaryTable(){
 
                 if(i === numLoans){
                     tableCell.innerHTML = "$"+((Math.round(totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
-                    tableCell.classList.add("tableTotalRow");                    
+                    tableCell.classList.add("tableHighlightRow");                    
                 } else{
                     tableCell.innerHTML = "$"+((Math.round(totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
@@ -1172,13 +1186,13 @@ function formatDateAsString(date){
 
 function whatIfAnalysis(){
 
-    //avalanche vs snowball analysis
-
     paymentTypeCopy = paymentType;
     monthlyPaymentCopy = monthlyPayment;
-    
+    totalInterestPaidCopy = totalInterestPaid;
+    debtFreeDateStringCopy = debtFreeDateString;
     whatIfAnalysisToggle = true;
 
+    //avalanche vs snowball analysis
     var avalancheTotalInterest = 0;
     var snowballTotalInterest = 0;
     var differenceTotalInterest = 0;
@@ -1234,6 +1248,93 @@ function whatIfAnalysis(){
     //reset inputs to status quo values
     paymentType = paymentTypeCopy;
     monthlyPayment = monthlyPaymentCopy;
+    totalInterestPaid = totalInterestPaidCopy;
+    debtFreeDateString = debtFreeDateStringCopy;
+
+    //Change in monthly payment analysis
+
+    var paymentChange2 = 10;
+    var paymentChange3 = 50;
+    var paymentChange4 = 100;
+    var paymentChange5 = Number(document.getElementById("monthlyPaymentDeltaInput").value);
+
+    var newMonthlyPayment = 0;
+    var newTotalInterestPaid = 0;
+    var newDebtFreeDateString = "";
+    
+    //row 1
+    document.getElementById("newMonthlyPayment1").innerHTML = "$"+(Math.round(monthlyPaymentCopy*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newTotalInterestPaid1").innerHTML = "$"+(Math.round(totalInterestPaidCopy*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newDebtFreeDate1").innerHTML = debtFreeDateString;
+
+    //row 2
+    cleanAnalysis();
+    getUserInputs();
+    monthlyPayment = monthlyPaymentCopy + paymentChange2;
+    calculateDebts();
+
+    newMonthlyPayment = monthlyPaymentCopy + paymentChange2;
+    newTotalInterestPaid = totalInterestPaid;
+    newDebtFreeDateString = debtFreeDateString;
+
+    document.getElementById("newMonthlyPayment2").innerHTML = "$"+(Math.round(newMonthlyPayment*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newTotalInterestPaid2").innerHTML = "$"+(Math.round(newTotalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newDebtFreeDate2").innerHTML = newDebtFreeDateString;
+    
+    //row 3
+    cleanAnalysis();
+    getUserInputs();
+    monthlyPayment = monthlyPaymentCopy + paymentChange3;
+    calculateDebts();
+
+    newMonthlyPayment = monthlyPaymentCopy + paymentChange3;
+    newTotalInterestPaid = totalInterestPaid;
+    newDebtFreeDateString = debtFreeDateString;
+
+    document.getElementById("newMonthlyPayment3").innerHTML = "$"+(Math.round(newMonthlyPayment*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newTotalInterestPaid3").innerHTML = "$"+(Math.round(newTotalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newDebtFreeDate3").innerHTML = newDebtFreeDateString; 
+
+    //row 4
+    cleanAnalysis();
+    getUserInputs();
+    monthlyPayment = monthlyPaymentCopy + paymentChange4;
+    calculateDebts();
+
+    newMonthlyPayment = monthlyPaymentCopy + paymentChange4;
+    newTotalInterestPaid = totalInterestPaid;
+    newDebtFreeDateString = debtFreeDateString;
+
+    document.getElementById("newMonthlyPayment4").innerHTML = "$"+(Math.round(newMonthlyPayment*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newTotalInterestPaid4").innerHTML = "$"+(Math.round(newTotalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+    document.getElementById("newDebtFreeDate4").innerHTML = newDebtFreeDateString;
+
+    //row 5
+    if(paymentChange5 && paymentChange5 > 0){
+        cleanAnalysis();
+        getUserInputs();
+        monthlyPayment = monthlyPaymentCopy + paymentChange5;
+        calculateDebts();
+    
+        newMonthlyPayment = monthlyPaymentCopy + paymentChange5;
+        newTotalInterestPaid = totalInterestPaid;
+        newDebtFreeDateString = debtFreeDateString;
+    
+        document.getElementById("newMonthlyPayment5").innerHTML = "$"+(Math.round(newMonthlyPayment*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+        document.getElementById("newTotalInterestPaid5").innerHTML = "$"+(Math.round(newTotalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+        document.getElementById("newDebtFreeDate5").innerHTML = newDebtFreeDateString;
+    } else{
+        document.getElementById("newMonthlyPayment5").innerHTML = "";
+        document.getElementById("newTotalInterestPaid5").innerHTML = "";
+        document.getElementById("newDebtFreeDate5").innerHTML = "";        
+    }
+
+    //reset inputs to status quo values
+    paymentType = paymentTypeCopy;
+    monthlyPayment = monthlyPaymentCopy;
+    totalInterestPaid = totalInterestPaidCopy;
+    debtFreeDateString = debtFreeDateStringCopy;
+    calculateDebts();
     whatIfAnalysisToggle = false;
 
 }

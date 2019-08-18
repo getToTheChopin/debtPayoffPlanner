@@ -143,7 +143,7 @@ input:hover{
     margin-bottom: 15px;
 }
 
-.tableTotalRow {
+.tableHighlightRow {
     font-weight:bold;
     border-top: 2px solid #31D0CB;
     border-bottom: 2px solid #31D0CB;
@@ -255,4 +255,9 @@ input:hover{
 
 .hide {
     display: none;
+}
+
+#monthlyPaymentDeltaInput{
+    width:60px;
+    max-width:75%;
 }

@@ -41,74 +41,124 @@
 
     </div>
 
-    <h2>Outputs</h2>
+    <div id="outputMasterDiv">
 
-    <div id="outputErrorDiv">
-        <p>Alert! As per my calculations, at least one of your loans will not be paid off within the next 50 years.</p>
-        <p>Perhaps something is wrong... please double check your inputs.</p>
-    </div>
+        <h2>Outputs</h2>
 
-    <div id="outputTextDiv" tabindex="0">
-
-    </div>
-
-    <div id="summaryTableDiv" tabindex="0">
-
-    </div>
-
-    <div id="chartDiv">
-        <div id="totalBalanceChartDiv" tabindex="0">
-            <canvas id="totalBalanceChart"></canvas>
+        <div id="outputErrorDiv">
+            <p>Alert! As per my calculations, at least one of your loans will not be paid off within the next 50 years.</p>
+            <p>Perhaps something is wrong... please double check your inputs.</p>
         </div>
 
-        <div id="loanBalanceChartDiv" tabindex="0">
-            <canvas id="loanBalanceChart"></canvas>
+        <div id="outputTextDiv" tabindex="0">
+
         </div>
 
-        <div id="loanPaymentChartDiv" tabindex="0">
-            <canvas id="loanPaymentChart"></canvas>
+        <div id="summaryTableDiv" tabindex="0">
+
         </div>
-    </div>
 
-    &nbsp;
+        <div id="chartDiv">
+            <div id="totalBalanceChartDiv" tabindex="0">
+                <canvas id="totalBalanceChart"></canvas>
+            </div>
 
-    <h2>Detailed Loan Tables</h2>
+            <div id="loanBalanceChartDiv" tabindex="0">
+                <canvas id="loanBalanceChart"></canvas>
+            </div>
 
-    <div id="loanTableDiv">
+            <div id="loanPaymentChartDiv" tabindex="0">
+                <canvas id="loanPaymentChart"></canvas>
+            </div>
+        </div>
 
-    </div>
+        &nbsp;
 
-    <h2>What-If Analysis</h2>
+        <h2>Detailed Loan Tables</h2>
 
-    <div id="whatIfDiv">
+        <div id="loanTableDiv">
 
-        <table id="whatIfTable">
-            <tr>
-                <th></th>
-                <th>Total Interest Paid</th>
-                <th>Debt-Free Date</th>
-            </tr>
+        </div>
 
-            <tr>
-                <td>Avalanche</td>
-                <td id="avalancheTotalInterestPaid"></td>
-                <td id="avalancheDebtFreeDate"></td>
-            </tr>
+        <h2>What-If Analysis</h2>
 
-            <tr>
-                <td>Snowball</td>
-                <td id="snowballTotalInterestPaid"></td>
-                <td id="snowballDebtFreeDate"></td>
-            </tr>
+        <div id="whatIfDiv">
 
-            <tr>
-                <td>Difference</td>
-                <td id="differenceTotalInterestPaid"></td>
-                <td id="differenceDebtFreeDate"></td>
-            </tr>
+            <table id="whatIfTable" tabindex="0">
+                <tr>
+                    <th></th>
+                    <th class="rightAlignCell">Total Interest Paid</th>
+                    <th class="rightAlignCell">Debt-Free Date</th>
+                </tr>
 
-        </table>
+                <tr>
+                    <td>Avalanche</td>
+                    <td class="rightAlignCell" id="avalancheTotalInterestPaid"></td>
+                    <td class="rightAlignCell" id="avalancheDebtFreeDate"></td>
+                </tr>
 
+                <tr>
+                    <td>Snowball</td>
+                    <td class="rightAlignCell" id="snowballTotalInterestPaid"></td>
+                    <td class="rightAlignCell" id="snowballDebtFreeDate"></td>
+                </tr>
+
+                <tr>
+                    <td class="tableHighlightRow">Difference</td>
+                    <td class="rightAlignCell tableHighlightRow" id="differenceTotalInterestPaid"></td>
+                    <td class="rightAlignCell tableHighlightRow" id="differenceDebtFreeDate"></td>
+                </tr>
+
+            </table>
+
+            &nbsp;
+
+            <table id="whatIfTable2" tabindex="0">
+                <tr>
+                    <th class="rightAlignCell">Change in<br>Monthly Payment</th>
+                    <th class="rightAlignCell">Monthly Payment</th>
+                    <th class="rightAlignCell">Total Interest Paid</th>
+                    <th class="rightAlignCell">Debt-Free Date</th>
+                </tr>
+
+                <tr>
+                    <td class="rightAlignCell"></td>
+                    <td class="rightAlignCell" id="newMonthlyPayment1"></td>
+                    <td class="rightAlignCell" id="newTotalInterestPaid1"></td>
+                    <td class="rightAlignCell" id="newDebtFreeDate1"></td>
+                </tr>
+
+                <tr>
+                    <td class="rightAlignCell">+ $10</td>
+                    <td class="rightAlignCell" id="newMonthlyPayment2"></td>
+                    <td class="rightAlignCell" id="newTotalInterestPaid2"></td>
+                    <td class="rightAlignCell" id="newDebtFreeDate2"></td>
+                </tr>
+
+                <tr>
+                    <td class="rightAlignCell">+ $50</td>
+                    <td class="rightAlignCell" id="newMonthlyPayment3"></td>
+                    <td class="rightAlignCell" id="newTotalInterestPaid3"></td>
+                    <td class="rightAlignCell" id="newDebtFreeDate3"></td>
+                </tr>
+
+                <tr>
+                    <td class="rightAlignCell">+ $100</td>
+                    <td class="rightAlignCell" id="newMonthlyPayment4"></td>
+                    <td class="rightAlignCell" id="newTotalInterestPaid4"></td>
+                    <td class="rightAlignCell" id="newDebtFreeDate4"></td>
+                </tr>
+
+                <tr>
+                    <td class="rightAlignCell">+ $ <input type="number" id="monthlyPaymentDeltaInput" class="userInput input-number–noSpinners" step=0.01 min=0></td>
+                    <td class="rightAlignCell" id="newMonthlyPayment5"></td>
+                    <td class="rightAlignCell" id="newTotalInterestPaid5"></td>
+                    <td class="rightAlignCell" id="newDebtFreeDate5"></td>
+                </tr>
+
+            </table>
+
+        </div>
     </div>
 
 </body>
