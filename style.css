@@ -50,7 +50,7 @@ table {
     background-color: #ffffff; 
 }
 
-.userInput {
+.userInput, .userInput3 {
     font-weight:bold;
     padding:1px;
     -moz-appearance:none; /* Firefox */
@@ -62,6 +62,7 @@ table {
     font-size: 0.95em;
 	max-width:80%;
 }
+
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: rgb(194, 194, 194);

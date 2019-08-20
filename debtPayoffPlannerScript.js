@@ -42,6 +42,11 @@ var loanPayoffMonthArray = [];
 var totalInterestByLoanArray = [];
 var totalPrincipalByLoanArray = [];
 
+var paymentChange2 = 10;
+var paymentChange3 = 50;
+var paymentChange4 = 100;
+var paymentChange5 = 0;
+
 var numMonths = 0;
 
 var chart;
@@ -75,22 +80,23 @@ getUserInputs();
 displayUserMessage();
 calculateDebts();
 whatIfAnalysis();
+whatIfAnalysis2();
 
 function addLoan(){
     var newRow = loanAssumptionTable.insertRow(-1);
     var rowNum = newRow.rowIndex;
 
     var firstCell = newRow.insertCell(0);
-    firstCell.innerHTML = "<span>Loan<br>Name</span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\" placeholder=\"Student loan\">";
+    firstCell.innerHTML = "<span>Loan<br>Name<br></span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\" placeholder=\"Student loan\">";
 
     var secondCell = newRow.insertCell(1);
-    secondCell.innerHTML = "<span>Loan balance<br>($) </span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\" placeholder=\"8000\" step=\"0.01\" min=\"0\">";
+    secondCell.innerHTML = "<span>Loan balance<br>($)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\" placeholder=\"8000\" step=\"0.01\" min=\"0\">";
 
     var thirdCell = newRow.insertCell(2);
-    thirdCell.innerHTML = "<span>Annual Interest Rate (%)</span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\" placeholder=\"6\" step=\"0.01\" min=\"0\">";
+    thirdCell.innerHTML = "<span>Annual Interest Rate (%)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\" placeholder=\"6\" step=\"0.01\" min=\"0\">";
 
     var fourthCell = newRow.insertCell(3);
-    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)</span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\" placeholder=\"50\" step=\"0.01\" min=\"0\">";
+    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\" placeholder=\"50\" step=\"0.01\" min=\"0\">";
 
     var fifthCell = newRow.insertCell(4);
     fifthCell.className = "deleteCell";
@@ -178,19 +184,20 @@ function getUserInputs(){
     } else {
         paymentType = "snowball";
     }
+
+    //set event listener on what-if custom payment cell
+    var inputsArray3 = document.getElementsByClassName("userInput3");
+    for(i=0;i<inputsArray3.length;i++) {
+        inputsArray3[i].addEventListener('change',whatIfAnalysis2, false);
+        console.log("add input event listener");
+    }
+
 }
 
 function refreshAnalysis(){
     console.log("refresh analysis");
 
     cleanAnalysis();
-
-    rowArray = document.getElementsByClassName("deleteCell");
-
-    //Update row reference of delete icons in the loan assumption table
-    for(i=0; i<rowArray.length; i++){
-        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
-    }
 
     if(chartActive == false){
     
@@ -204,6 +211,7 @@ function refreshAnalysis(){
     displayUserMessage();
     calculateDebts();
     whatIfAnalysis();
+    whatIfAnalysis2();
 }
 
 function cleanAnalysis(){
@@ -229,11 +237,21 @@ function cleanAnalysis(){
 
     nilInputCount = 0;
 
+    rowArray = document.getElementsByClassName("deleteCell");
+
+    //Update row reference of delete icons in the loan assumption table
+    for(i=0; i<rowArray.length; i++){
+        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
+    }
+
     if(whatIfAnalysisToggle == false){
         outputTextDiv.innerHTML = "";
         summaryTableDiv.innerHTML = "";
         loanTableDiv.innerHTML = "";
         outputErrorDiv.classList.add("hide");
+
+        document.getElementById("monthlyPaymentDeltaInput").value = "";
+        paymentChange5 = 0;
 
         //reset what if analysis tables
         document.getElementById("avalancheTotalInterestPaid").innerHTML = "";
@@ -928,6 +946,11 @@ function createSummaryTable(){
     var summaryTable1d = document.createElement('th');
     var summaryTable1e = document.createElement('th');
 
+    summaryTable1c.classList.add("rightAlignCell");
+    summaryTable1d.classList.add("rightAlignCell");
+    summaryTable1e.classList.add("rightAlignCell");
+
+
     summaryTable1a.textContent = "Loan Name";
     summaryTable1b.textContent = "Debt-Free Date";
     summaryTable1c.textContent = "Total Interest Paid";
@@ -1003,10 +1026,10 @@ function createSummaryTable(){
                 tableCell.classList.add("rightAlignCell");
 
                 if(i === numLoans){
-                    tableCell.innerHTML = "$"+((Math.round(totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
+                    tableCell.innerHTML = "$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });                    
                     tableCell.classList.add("tableHighlightRow");                    
                 } else{
-                    tableCell.innerHTML = "$"+((Math.round(totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
+                    tableCell.innerHTML = "$"+(Math.round((totalInterestByLoanArray[i]+totalPrincipalByLoanArray[i])*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
                 }
             }
         }
@@ -1063,6 +1086,11 @@ function createDebtTables(currentLoanNum, currentPayoffMonth){
     var loanTable1c = document.createElement('th');
     var loanTable1d = document.createElement('th');
     var loanTable1e = document.createElement('th');
+
+    loanTable1b.classList.add("rightAlignCell");
+    loanTable1c.classList.add("rightAlignCell");
+    loanTable1d.classList.add("rightAlignCell");
+    loanTable1e.classList.add("rightAlignCell");
 
     loanTable1a.textContent = "Month";
     loanTable1b.textContent = "Payment";
@@ -1244,23 +1272,27 @@ function whatIfAnalysis(){
     document.getElementById("snowballDebtFreeDate").innerHTML = snowballDebtFreeDateString;
     document.getElementById("differenceDebtFreeDate").innerHTML = differenceNumMonths + " months";
 
-
     //reset inputs to status quo values
-    paymentType = paymentTypeCopy;
-    monthlyPayment = monthlyPaymentCopy;
-    totalInterestPaid = totalInterestPaidCopy;
-    debtFreeDateString = debtFreeDateStringCopy;
+    cleanAnalysis();
+    getUserInputs();
+    calculateDebts();
+    whatIfAnalysisToggle = false;
+}
+
+function whatIfAnalysis2(){
+
+    paymentTypeCopy = paymentType;
+    monthlyPaymentCopy = monthlyPayment;
+    totalInterestPaidCopy = totalInterestPaid;
+    debtFreeDateStringCopy = debtFreeDateString;
+    whatIfAnalysisToggle = true;
 
     //Change in monthly payment analysis
-
-    var paymentChange2 = 10;
-    var paymentChange3 = 50;
-    var paymentChange4 = 100;
-    var paymentChange5 = Number(document.getElementById("monthlyPaymentDeltaInput").value);
-
     var newMonthlyPayment = 0;
     var newTotalInterestPaid = 0;
     var newDebtFreeDateString = "";
+
+    paymentChange5 = Number(document.getElementById("monthlyPaymentDeltaInput").value);
     
     //row 1
     document.getElementById("newMonthlyPayment1").innerHTML = "$"+(Math.round(monthlyPaymentCopy*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, });
@@ -1330,10 +1362,8 @@ function whatIfAnalysis(){
     }
 
     //reset inputs to status quo values
-    paymentType = paymentTypeCopy;
-    monthlyPayment = monthlyPaymentCopy;
-    totalInterestPaid = totalInterestPaidCopy;
-    debtFreeDateString = debtFreeDateStringCopy;
+    cleanAnalysis();
+    getUserInputs();
     calculateDebts();
     whatIfAnalysisToggle = false;
 
