@@ -1,14 +1,3 @@
-/*
-To be added:
-- Don't do any calculations or show any outputs if the inputs are not fully filled in (show message instead that loan info is missing)
-- Add chart.js graphs
-- Add ability to delete loans
-- Add ability to show / hide detailed loan tables
-- Add section for what if analysis (avalanche vs snowball comparison, what if monthly payment is higher by +$1 / +$10 / +$100 / custom)
-- Error handling (loan not set, loan never pays off, etc.)
-- Code review / cleanup / comment out the console.log lines
-*/
-
 var addLoanButton = document.getElementById("addLoanButton");
 
 var loanAssumptionTable = document.getElementById("loanAssumptionTable");
@@ -68,6 +57,11 @@ var loanTableDiv = document.getElementById("loanTableDiv");
 
 var loanTableDisplayToggleArray = [];
 
+var generateURLButton = document.getElementById("generateURLButton");
+var customURLOutput = document.getElementById("customURLOutput");
+
+var importLoanToggle = false;
+
 //Final answers
 var debtFreeDate = new Date();
 var debtFreeDateString = "";
@@ -76,13 +70,73 @@ var totalPrincipalPaid = 0;
 
 
 //main method
+getURLValues();
 getUserInputs();
+generateCustomURL();
 displayUserMessage();
 calculateDebts();
 whatIfAnalysis();
 whatIfAnalysis2();
 
+function getURLValues () {
+    var hashParams = window.location.hash.substr(1).split('&'); // substr(1) to remove the `#`
+    
+    var numLoansImport = Math.floor((hashParams.length-1)/4);
+    console.log("Num loans import: "+numLoansImport);
+
+    importLoanToggle = true;
+
+    for(q=0; q<numLoansImport; q++){
+        addLoan();
+    }
+
+    importLoanToggle = false;
+    
+    console.log(hashParams);
+    if(hashParams[0] === "") {
+        return;
+    }
+
+    for(i=0; i <hashParams.length; i++){
+        console.log(hashParams.length);
+        var p = hashParams[i].split('=');
+
+        document.getElementById(p[0]).value = decodeURIComponent(p[1]);
+    }
+
+    /*
+    cleanAnalysis();
+    getUserInputs();
+    */
+}
+
+function generateCustomURL() {
+
+    generateURLButton.addEventListener('click', function() {
+
+        var customURL = [location.protocol, '//', location.host, location.pathname].join('');
+        console.log("Custom URL: "+customURL);
+
+        var inputsArray = document.getElementsByClassName("userInput");
+
+        for(i=0; i<inputsArray.length; i++){
+            if(i == 0){
+                customURL += "#"+inputsArray[i].id+"="+inputsArray[i].value;
+            } else{
+                customURL += "&"+inputsArray[i].id+"="+inputsArray[i].value; 
+            }
+        }
+       
+        customURLOutput.innerHTML = customURL;
+        copyToClipboard('customURLOutput');
+
+    }, false);
+
+}
+
 function addLoan(){
+
+    console.log("Add loan");
 
     numLoans ++;
 
@@ -90,16 +144,16 @@ function addLoan(){
     var rowNum = newRow.rowIndex;
 
     var firstCell = newRow.insertCell(0);
-    firstCell.innerHTML = "<span>Loan<br>Name<br></span><input type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\" placeholder=\"Student loan\">";
+    firstCell.innerHTML = "<span>Loan<br>Name<br></span><input id=\"loanNameRow"+rowNum+"\" type=\"text\" class=\"userInput input-number–noSpinners loanNameInput\" placeholder=\"Student loan\">";
 
     var secondCell = newRow.insertCell(1);
-    secondCell.innerHTML = "<span>Loan balance<br>($)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\" placeholder=\"8000\" step=\"0.01\" min=\"0\">";
+    secondCell.innerHTML = "<span>Loan balance<br>($)<br></span><input id=\"loanBalanceRow"+rowNum+"\" type=\"number\" class=\"userInput input-number–noSpinners loanBalanceInput\" placeholder=\"8000\" step=\"0.01\" min=\"0\">";
 
     var thirdCell = newRow.insertCell(2);
-    thirdCell.innerHTML = "<span>Annual Interest Rate (%)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\" placeholder=\"6\" step=\"0.01\" min=\"0\">";
+    thirdCell.innerHTML = "<span>Annual Interest Rate (%)<br></span><input id=\"interestRateRow"+rowNum+"\" type=\"number\" class=\"userInput input-number–noSpinners interestRateInput\" placeholder=\"6\" step=\"0.01\" min=\"0\">";
 
     var fourthCell = newRow.insertCell(3);
-    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)<br></span><input type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\" placeholder=\"50\" step=\"0.01\" min=\"0\">";
+    fourthCell.innerHTML = "<span>Minimum Monthly Payment ($)<br></span><input id=\"minMonthlyPaymentRow"+rowNum+"\" type=\"number\" class=\"userInput input-number–noSpinners minPaymentInput\" placeholder=\"50\" step=\"0.01\" min=\"0\">";
 
     var fifthCell = newRow.insertCell(4);
     fifthCell.className = "deleteCell";
@@ -117,7 +171,10 @@ function addLoan(){
         console.log("add input event listener");
     }
 
-    refreshAnalysis();
+    if(importLoanToggle == false){
+        console.log("Refresh analysis from add loan function");
+        refreshAnalysis();
+    }
 
 }
 
@@ -182,8 +239,6 @@ function getUserInputs(){
             nilInputCount ++;
         }
     }
-
-    //numLoans = inputsArray.length;
 
     monthlyPayment = Number(document.getElementById("monthlyPaymentInput").value);
 
