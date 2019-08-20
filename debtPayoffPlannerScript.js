@@ -598,21 +598,15 @@ function calculateDebts(){
 function showOutputs(){
 
     //fill outputTextDiv
-    var outputTextPara = document.createElement("p");
-    outputTextPara.innerHTML = "You will be debt free in <span class=\"highlightText\">"+debtFreeDateString+"</span> ("+numMonths+" months from now)";
-    outputTextDiv.appendChild(outputTextPara);
-
-    var outputTextPara2 = document.createElement("p");
-    outputTextPara2.innerHTML = "Total interest paid: <span class=\"highlightText\">$"+(Math.round(totalInterestPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
-    outputTextDiv.appendChild(outputTextPara2);
-
-    var outputTextPara3 = document.createElement("p");
-    outputTextPara3.innerHTML = "Total principal paid: <span class=\"highlightText\">$"+(Math.round(totalPrincipalPaid*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
-    outputTextDiv.appendChild(outputTextPara3);
-
-    var outputTextPara4 = document.createElement("p");
-    outputTextPara4.innerHTML = "Grand total cost: <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid)*100)/100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+"</span>";
-    outputTextDiv.appendChild(outputTextPara4);
+    var outputTextSpan = document.createElement("span");
+    outputTextSpan.innerHTML = "Assuming that:"
+    +"<ul><li>You make a total payment of <span class=\"highlightText\">$"+(Math.round(monthlyPayment)).toLocaleString()+" per month</span> against your loans</li>"
+    +"<li>You pay off your loans using the <span class=\"highlightText\">"+paymentType+"</span> method</li></ul>"
+    +"You will be debt free in <span class=\"highlightText\">"+debtFreeDateString+"</span> ("+numMonths+" months from now)<br><br>"
+    +"It will cost you a grand total of <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid))).toLocaleString()+"</span> to pay off your loans:"
+    +"<ul><li>Total interest paid: <span class=\"highlightText\">$"+(Math.round(totalInterestPaid)).toLocaleString()+"</span></li>"
+    +"<li>Total principal paid: <span class=\"highlightText\">$"+(Math.round(totalPrincipalPaid)).toLocaleString()+"</span></li></ul>";
+    outputTextDiv.appendChild(outputTextSpan);
 
     createSummaryTable();
 
