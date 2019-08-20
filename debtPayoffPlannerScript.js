@@ -104,10 +104,6 @@ function getURLValues () {
         document.getElementById(p[0]).value = decodeURIComponent(p[1]);
     }
 
-    /*
-    cleanAnalysis();
-    getUserInputs();
-    */
 }
 
 function generateCustomURL() {
@@ -314,6 +310,8 @@ function cleanAnalysis(){
     numMonths = 0;
 
     nilInputCount = 0;
+
+    customURLOutput.innerHTML = "Click button to get a saveable & shareable link for your custom scenario";
 
     if(whatIfAnalysisToggle == false){
         outputTextDiv.innerHTML = "";
