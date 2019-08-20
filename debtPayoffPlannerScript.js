@@ -83,6 +83,9 @@ whatIfAnalysis();
 whatIfAnalysis2();
 
 function addLoan(){
+
+    numLoans ++;
+
     var newRow = loanAssumptionTable.insertRow(-1);
     var rowNum = newRow.rowIndex;
 
@@ -119,8 +122,19 @@ function addLoan(){
 }
 
 function deleteLoan(j){
+
+    numLoans --;
+
     console.log("Delete row:" +j);
     loanAssumptionTable.deleteRow(j);
+
+    rowArray = document.getElementsByClassName("deleteCell");
+
+    //Update row reference of delete icons in the loan assumption table
+    for(i=0; i<rowArray.length; i++){
+        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
+    }
+
     refreshAnalysis();
 }
 
@@ -169,7 +183,7 @@ function getUserInputs(){
         }
     }
 
-    numLoans = inputsArray.length;
+    //numLoans = inputsArray.length;
 
     monthlyPayment = Number(document.getElementById("monthlyPaymentInput").value);
 
@@ -215,6 +229,12 @@ function refreshAnalysis(){
 }
 
 function cleanAnalysis(){
+
+    loanNameInputArray.length = 0;
+    loanBalanceInputArray.length = 0;
+    interestRateInputArray.length = 0;
+    minPaymentInputArray.length = 0;
+
     loanBOPArray.length = 0;
     loanPaymentArray.length = 0;
     loanInterestPaidArray.length = 0;
@@ -227,6 +247,9 @@ function cleanAnalysis(){
     totalDebtBOPArray.length = 0;
     totalDebtEOPArray.length = 0;
 
+    totalInterestByLoanArray.length = 0;
+    totalPrincipalByLoanArray.length = 0;
+
     debtFreeDateString = "";
 
     debtFreeDate = new Date();
@@ -236,13 +259,6 @@ function cleanAnalysis(){
     numMonths = 0;
 
     nilInputCount = 0;
-
-    rowArray = document.getElementsByClassName("deleteCell");
-
-    //Update row reference of delete icons in the loan assumption table
-    for(i=0; i<rowArray.length; i++){
-        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
-    }
 
     if(whatIfAnalysisToggle == false){
         outputTextDiv.innerHTML = "";
