@@ -181,11 +181,19 @@ function deleteLoan(j){
     console.log("Delete row:" +j);
     loanAssumptionTable.deleteRow(j);
 
-    rowArray = document.getElementsByClassName("deleteCell");
+    var input1Array = document.getElementsByClassName("loanNameInput")
+    var input2Array = document.getElementsByClassName("loanBalanceInput")
+    var input3Array = document.getElementsByClassName("interestRateInput")
+    var input4Array = document.getElementsByClassName("minPaymentInput")
+    var deleteCellArray = document.getElementsByClassName("deleteCell");
 
-    //Update row reference of delete icons in the loan assumption table
-    for(i=0; i<rowArray.length; i++){
-        rowArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
+    //Update row IDs and row reference of delete icons in the loan assumption table
+    for(i=0; i<numLoans; i++){
+        input1Array[i].id = "loanNameRow"+i;
+        input2Array[i].id = "loanBalanceRow"+i;
+        input3Array[i].id = "interestRateRow"+i;
+        input4Array[i].id = "minMonthlyPaymentRow"+i;
+        deleteCellArray[i].innerHTML = "<span class=\"deleteIcon\" onclick=\"deleteLoan("+i+")\">&#10008</span>";
     }
 
     refreshAnalysis();
@@ -600,7 +608,7 @@ function showOutputs(){
     //fill outputTextDiv
     var outputTextSpan = document.createElement("span");
     outputTextSpan.innerHTML = "Assuming that:"
-    +"<ul><li>You make a total payment of <span class=\"highlightText\">$"+(Math.round(monthlyPayment)).toLocaleString()+" per month</span> against your loans</li>"
+    +"<ul><li>You make total payments of <span class=\"highlightText\">$"+(Math.round(monthlyPayment)).toLocaleString()+" per month</span> against your loans</li>"
     +"<li>You pay off your loans using the <span class=\"highlightText\">"+paymentType+"</span> method</li></ul>"
     +"You will be debt free in <span class=\"highlightText\">"+debtFreeDateString+"</span> ("+numMonths+" months from now)<br><br>"
     +"It will cost you a grand total of <span class=\"highlightText\">$"+(Math.round((totalInterestPaid+totalPrincipalPaid))).toLocaleString()+"</span> to pay off your loans:"
