@@ -60,7 +60,15 @@ var loanTableDisplayToggleArray = [];
 var generateURLButton = document.getElementById("generateURLButton");
 var customURLOutput = document.getElementById("customURLOutput");
 
+var whatIfAnalysisPara = document.getElementById("whatIfAnalysisPara");
+
 var importLoanToggle = false;
+
+//More info section
+var moreInfoSwitch = 0;
+var moreInfoButton = document.getElementById("moreInfoButton");
+var moreInfoTextDiv = document.getElementById("moreInfoTextDiv");
+
 
 //Final answers
 var debtFreeDate = new Date();
@@ -80,8 +88,8 @@ whatIfAnalysis2();
 
 function getURLValues () {
     var hashParams = window.location.hash.substr(1).split('&'); // substr(1) to remove the `#`
-    
-    var numLoansImport = Math.floor((hashParams.length-1)/4);
+
+    var numLoansImport = Math.floor((hashParams.length-2)/4);
     console.log("Num loans import: "+numLoansImport);
 
     importLoanToggle = true;
@@ -101,7 +109,18 @@ function getURLValues () {
         console.log(hashParams.length);
         var p = hashParams[i].split('=');
 
-        document.getElementById(p[0]).value = decodeURIComponent(p[1]);
+        if(p[0] == "paymentType"){
+            if(p[1] == "avalanche"){
+                document.getElementById("avalancheType").checked = true;
+                document.getElementById("snowballType").checked = false;
+            } else{
+                document.getElementById("avalancheType").checked = false;
+                document.getElementById("snowballType").checked = true;                
+            }
+
+        } else{
+            document.getElementById(p[0]).value = decodeURIComponent(p[1]);
+        }
     }
 
 }
@@ -121,6 +140,12 @@ function generateCustomURL() {
             } else{
                 customURL += "&"+inputsArray[i].id+"="+inputsArray[i].value; 
             }
+        }
+
+        if(document.getElementById("avalancheType").checked){
+            customURL += "&paymentType=avalanche";
+        } else {
+            customURL += "&paymentType=snowball";
         }
        
         customURLOutput.innerHTML = customURL;
@@ -1291,6 +1316,9 @@ function whatIfAnalysis(){
     debtFreeDateStringCopy = debtFreeDateString;
     whatIfAnalysisToggle = true;
 
+    //set intro para text
+    whatIfAnalysisPara.innerHTML = "Based on the inputs above, you'll make total payments of <span class=\"highlightText\"> $"+monthlyPayment+" per month</span> against your loans. You'll pay off your debts using the <span class=\"highlightText\">"+paymentType+"</span> method.";
+
     //avalanche vs snowball analysis
     var avalancheTotalInterest = 0;
     var snowballTotalInterest = 0;
@@ -1357,6 +1385,8 @@ function whatIfAnalysis2(){
     totalInterestPaidCopy = totalInterestPaid;
     debtFreeDateStringCopy = debtFreeDateString;
     whatIfAnalysisToggle = true;
+
+
 
     //Change in monthly payment analysis
     var newMonthlyPayment = 0;
@@ -1437,5 +1467,20 @@ function whatIfAnalysis2(){
     getUserInputs();
     calculateDebts();
     whatIfAnalysisToggle = false;
+
+}
+
+
+function displayMoreInfo(){
+
+    if(moreInfoSwitch==0){
+        moreInfoSwitch = 1;
+        moreInfoTextDiv.classList.remove("hide");
+        moreInfoButton.innerHTML = "&#9447;"
+    } else{
+        moreInfoSwitch = 0;
+        moreInfoTextDiv.classList.add("hide");
+        moreInfoButton.innerHTML = "&#9432;"
+    }
 
 }

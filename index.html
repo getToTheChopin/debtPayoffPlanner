@@ -37,6 +37,22 @@
         </table>
     </div>
 
+    <div id="moreInfoDiv">
+        <span id="moreInfoButton" onclick="displayMoreInfo()">&#9432;</span>
+    </div>
+
+    <div id="moreInfoTextDiv" class="hide">
+        <p><b>Total Monthly Payment:</b> Must be greater than or equal to the minimum monthly payments on all of your loans combined</p>
+        <p><b>Payment Type: </b></p>
+        <ul>
+            <li><b>Avalanche</b> means that your excess payments (above and beyond your loan minimum payments) are used to pay off your loans with the <b>highest interest rate</b> first</li>
+            <li><b>Snowball</b> means that your excess payments are used to pay off your loans with the <b>smallest balances</b> first</li>
+            <li>The avalanche method is optimal from a mathematical perspective -- it allows you to minimize the total interest paid across your loans</li>
+            <li>However, the snowball method allows you to pay off your small loans faster than in the avalanche method. Racking up quick wins can provide motivation to stay on track with your debt repayment strategy</li>
+        </ul>
+        <p><b>Compounding:</b> This tool assumes that all of the loans use monthly compounding to calculate the interest payments</p>
+    </div>
+
     <div id="userMessageDiv">
 
     </div>
@@ -54,25 +70,48 @@
 
         </div>
 
-        <div id="summaryTableDiv" tabindex="0">
+        <div id="summaryTableDiv">
 
         </div>
 
+        &nbsp;
+
         <div id="chartDiv">
+
+            <p>The chart below shows the total amount owed on your loans, on a month-by-month basis from today up until your loans are fully paid off.</p>
+
             <div id="totalBalanceChartDiv" tabindex="0">
                 <canvas id="totalBalanceChart"></canvas>
             </div>
+
+            &nbsp;
+
+            <p>Adding in some more detail, the next chart shows the balance outstanding on each of your loans individually.</p>
+            <p>In the chart legend, you can click the name of a loan to toggle the view ON or OFF.</p>
 
             <div id="loanBalanceChartDiv" tabindex="0">
                 <canvas id="loanBalanceChart"></canvas>
             </div>
 
+            &nbsp;
+
+            <p>This chart shows how your total monthly payment will be allocated amongst each of your loans.</p>
+            <p>Notice how the total payment stays the same in each month. When one loan gets paid off, the payment that you were making on that loan is now applied against a different loan.</p>
+            <p>The order of priority for how you pay off your loans is determined by whether you use the avalanche method (highest interest rate first) or the snowball method (lowest loan balance first).</p>
+            <p>In the chart legend, you can click the name of a loan to toggle the view ON or OFF.</p>
+
             <div id="loanPaymentChartDiv" tabindex="0">
                 <canvas id="loanPaymentChart"></canvas>
             </div>
+
+            &nbsp;
         </div>
+
+        <p>Click the button below to generate a link for your custom scenario. This link will save all of the loan inputs that you've entered above, so that you won't need to punch them in again.</p>
         
         <div id="customURLContainer">
+
+
             <div class="customURLDiv">
                 <button id="generateURLButton">Save this scenario</button>
             </div>
@@ -86,13 +125,25 @@
 
         <h2>Detailed Loan Tables</h2>
 
+        <p>Click the <b>+</b> icon for a table that lists out a month-by-month record of your loan payment, interest paid, principal paid, and loan balance (i.e., the nitty-gritty details).</p>
+
         <div id="loanTableDiv">
 
         </div>
 
+        &nbsp;
+
         <h2>What-If Analysis</h2>
 
         <div id="whatIfDiv">
+
+            <p id="whatIfAnalysisPara"></p>
+
+            &nbsp;
+
+            <h3>What-If Analysis #1</h3>
+
+            <p>How do the final results change if you use the avalanche or snowball method?</p>
 
             <table id="whatIfTable" tabindex="0">
                 <tr>
@@ -120,8 +171,21 @@
                 </tr>
 
             </table>
+            
+            <p>Typically, the avalanche method allows you to become debt-free more quickly, and allows you to pay less interest in total.</p>
+            <p>However, the results of the two methods can be the same if:</p>
+            <ul>
+                <li>You only have a single loan to pay off</li>
+                <li>Your total monthly payment is equal to the minimum monthly payments of all of your loans combined (i.e., there isn't "excess" money that can be used to pay off your loans more quickly)</li>
+                <li>The loans with the smallest balances are also the loans with the highest interest rates -- meaning that the two methods produce the same priority ranking</li>
+            </ul>
 
             &nbsp;
+
+            <h3>What-If Analysis #2</h3>
+
+            <p>Now, how would the final results change if you increase your total monthly payment?</p>
+            <p>The analysis below shows how your total interest paid and debt-free date would change using different assumptions for your total monthly payment.</p>
 
             <table id="whatIfTable2" tabindex="0">
                 <tr>
@@ -160,13 +224,18 @@
                 </tr>
 
                 <tr>
-                    <td class="rightAlignCell">+ $ <input type="number" id="monthlyPaymentDeltaInput" class="userInput3 input-number–noSpinners" step=0.01 min=0></td>
+                    <td class="rightAlignCell">+ $ <input type="number" id="monthlyPaymentDeltaInput" class="userInput3 input-number–noSpinners" step=0.01 min=0 placeholder="200"></td>
                     <td class="rightAlignCell" id="newMonthlyPayment5"></td>
                     <td class="rightAlignCell" id="newTotalInterestPaid5"></td>
                     <td class="rightAlignCell" id="newDebtFreeDate5"></td>
                 </tr>
 
             </table>
+
+            <p>Use the input cell in the last row to test out different increases to your total monthly payment (e.g., +$25, +$200, etc.).</p>
+            <p>Keep an eye out for the impact on your total interest paid -- a small increase to your monthly payment can create big savings!</p>
+
+            &nbsp;
 
         </div>
     </div>

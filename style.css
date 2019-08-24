@@ -293,3 +293,22 @@ input:hover{
     overflow-wrap: break-word;
     vertical-align: bottom;
 }
+
+#moreInfoDiv{
+    text-align: center;
+    margin:auto;
+    padding-bottom:1%;
+}
+
+#moreInfoButton{
+    font-size:1.2em;
+    color: rgb(77, 77, 77);
+    cursor: pointer;
+}
+
+#moreInfoTextDiv{
+    font-size:0.8em;
+    padding: 3px 6px 0% 6px;
+    border: 1px dotted gray;
+    margin: 0% 2% 3% 2%;
+}
