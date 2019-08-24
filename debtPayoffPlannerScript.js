@@ -392,28 +392,26 @@ function displayUserMessage(){
     console.log("Nil input count: "+nilInputCount);
 
     if(numLoans == 0){
-        var noLoanPara = document.createElement("p");
-        noLoanPara.innerHTML = "Click the <span id=\"addLoanSpan\">+ Add Loan</span> button above to get started!";
+        var noLoanSpan = document.createElement("span");
+        noLoanSpan.innerHTML = "Click the <span id=\"addLoanSpan\">+ Add Loan</span> button above to get started!";
         userMessageDiv.innerHTML = "";
-        userMessageDiv.appendChild(noLoanPara);
+        userMessageDiv.appendChild(noLoanSpan);
         userMessageDiv.classList.remove("hide");
 
         outputMasterDiv.classList.add("hide");
 
     } else if(nilInputCount > 0){
-        var nilInputPara = document.createElement("p");
-        nilInputPara.innerHTML = "Missing data... please fill in the loan inputs above!";
+        var nilInputSpan = document.createElement("span");
+        nilInputSpan.innerHTML = "Missing data... please fill in the loan inputs above!";
         userMessageDiv.innerHTML = "";
-        userMessageDiv.appendChild(nilInputPara);
+        userMessageDiv.appendChild(nilInputSpan);
         userMessageDiv.classList.remove("hide");
 
         outputMasterDiv.classList.add("hide");  
 
     } else {
         userMessageDiv.innerHTML = "";
-
         userMessageDiv.classList.add("hide");
-
         outputMasterDiv.classList.remove("hide");
             
     }
@@ -709,7 +707,7 @@ function showOutputs(){
                     ticks: {
                         // Include a dollar sign in the ticks and add comma formatting
                         callback: function(value, index, values) {
-                            return '$' + (value.toFixed(0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+" ";
+                            return '$' + Math.round(value).toLocaleString()+" ";
                         },
 
                         fontColor: "rgb(56,56,56)",
@@ -833,7 +831,7 @@ function showOutputs(){
                     ticks: {
                         // Include a dollar sign in the ticks and add comma formatting
                         callback: function(value, index, values) {
-                            return '$' + (value.toFixed(0)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })+" ";
+                            return '$' + Math.round(value).toLocaleString()+" ";
                         },
 
                         fontColor: "rgb(56,56,56)",
@@ -910,6 +908,8 @@ function showOutputs(){
             label:loanNameInputArray[i],
             data: loanPaymentArray[i],
             backgroundColor: colours[i],
+            borderColor: colours[i],
+            borderWidth:0,
         }
     }
 
@@ -922,7 +922,7 @@ function showOutputs(){
         // The data for our dataset
         data: {
             labels: monthLabelArray,
-            datasets: dataSetData3
+            datasets: dataSetData3,
         },
     
         // Configuration options go here
@@ -1002,6 +1002,8 @@ function showOutputs(){
                     },
 
                     stacked: true,
+
+                    barPercentage: 1.0,
 
                 }],    
             },

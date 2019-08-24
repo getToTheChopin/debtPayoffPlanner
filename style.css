@@ -22,11 +22,6 @@ th {
 	background-color: #C4C4C4;
 }
 
-table {
-    border-collapse: collapse;
-    margin:auto;
-}
-
 ::-webkit-scrollbar {
     -webkit-appearance: none;
 }
@@ -49,20 +44,6 @@ table {
     border-radius: 10px;  
     background-color: #ffffff; 
 }
-
-.userInput, .userInput3 {
-    font-weight:bold;
-    padding:1px;
-    -moz-appearance:none; /* Firefox */
-    -webkit-appearance:none; /* Safari and Chrome */
-    appearance:none;
-    text-align:center;
-    font-family:helvetica;
-    width: 100px;
-    font-size: 0.95em;
-	max-width:80%;
-}
-
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: rgb(194, 194, 194);
@@ -99,24 +80,89 @@ input:hover{
     border:1px solid rgb(146, 146, 146);
 }
 
+
+/* css as usual */
+
+table {
+    border-collapse: collapse;
+    margin:auto;
+    font-size:0.9em;
+}
+
 #loanAssumptionTable{
-    font-size:0.95em;
-    width:500px;
-    max-width:95%;
+    font-size:0.75em;
+    width:375px;
+    max-width:90%;
     border:2px solid #0071B3;
     margin-top:20px;
     margin-bottom:20px;
+}
+
+#loanAssumptionTable td {
+    padding: 5px 1px 5px 1px;
+}
+
+.summaryTable {
+    width:375px;
+    max-width:90%;
+    font-size:0.80em;
+}
+
+.userInput, .userInput3 {
+    font-weight:bold;
+    padding:1px;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+    text-align:center;
+    font-family:helvetica;
+    width: 75px;
+    font-size: 0.80em;
+	max-width:80%;
+}
+
+/* conditional for screen size minimum of 500px */
+@media (min-width:700px) {
+  /* your conditional / responsive CSS inside this condition */
+
+    table {
+        border-collapse: collapse;
+        margin:auto;
+        font-size:1em;
+    }  
+
+    .userInput, .userInput3 {
+        font-weight:bold;
+        padding:1px;
+        -moz-appearance:none; /* Firefox */
+        -webkit-appearance:none; /* Safari and Chrome */
+        appearance:none;
+        text-align:center;
+        font-family:helvetica;
+        width: 100px;
+        font-size: 0.95em;
+        max-width:80%;
+    }
+
+    #loanAssumptionTable{
+        font-size:0.95em;
+        width:500px;
+        max-width:90%;
+        border:2px solid #0071B3;
+        margin-top:20px;
+        margin-bottom:20px;
+    }
+
+    .summaryTable {
+        width:500px;
+        max-width:90%;   
+    }
 }
 
 #planInputTable{
     width:500px;
     max-width:95%;
     border:2px solid rgb(114, 0, 129);   
-}
-
-.summaryTable {
-    width:500px;
-    max-width:95%;   
 }
 
 .rightAlignCell {
@@ -137,6 +183,10 @@ input:hover{
 #loanDiv, #planDiv, #outputTextDiv, #summaryTableDiv, #chartDiv, #loanTableDiv {
     text-align:center;
     margin:auto;
+}
+
+#outputMasterDiv p {
+    text-align:left;
 }
 
 #planDiv {
@@ -203,7 +253,10 @@ input:hover{
     margin:auto;
     font-size: 1.2em;
     background-image: linear-gradient(to right top, #ebebeb, #f0f0f0, #f5f5f5, #fafafa, #ffffff);
+    vertical-align: middle;
+    padding:2%;
 }
+
 
 #outputErrorDiv{
     width:500px;
@@ -262,7 +315,7 @@ input:hover{
 
 #monthlyPaymentDeltaInput{
     width:60px;
-    max-width:75%;
+    max-width:50%;
 }
 
 #customURLContainer {
