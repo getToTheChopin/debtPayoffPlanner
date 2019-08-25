@@ -344,6 +344,7 @@ table {
     font-size: 14px;
     background-color: white;
     overflow-wrap: break-word;
+    word-break: break-word;
     vertical-align: bottom;
 }
 
@@ -364,4 +365,30 @@ table {
     padding: 3px 6px 0% 6px;
     border: 1px dotted gray;
     margin: 0% 2% 3% 2%;
+}
+
+/*radio button styling*/
+#avalancheType, #snowballType {
+    opacity: 0;
+    position: fixed;
+    width: 0;
+}
+
+.radioLabel {
+    display: inline-block;
+    background-color: rgb(238, 238, 238);
+    padding: 5px;
+    border: 1px solid rgb(104, 104, 104);
+    border-radius: 4px;
+    margin: 1px 0px 1px 0px;
+    cursor: pointer;
+}
+
+#avalancheType:checked + label, #snowballType:checked + label {
+    background-color:rgb(238, 213, 255);
+    border-color: rgb(94, 28, 170);
+}
+
+#avalancheType:focus + label, #snowballType:focus + label {
+    border: 2px dashed #444;
 }

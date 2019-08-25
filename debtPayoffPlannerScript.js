@@ -1003,7 +1003,11 @@ function showOutputs(){
 
                     stacked: true,
 
-                    barPercentage: 1.0,
+                    //categoryPercentage: 1.0,
+                    barThickness: 4,  // number (pixels) or 'flex'
+                    maxBarThickness: 8, // number (pixels)
+                    //barPercentage: 1.0,
+                    //maxBarThickness: 100,
 
                 }],    
             },

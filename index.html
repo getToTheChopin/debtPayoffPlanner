@@ -12,6 +12,20 @@
 <body>
     <h1>Debt Payoff Planner</h1>
 
+    <p>Debt: a four-letter word, general burden, and delayer of dreams.</p>
+    <p>However, with a good plan and a healthy bit of persistence, we can leave our loans behind (and if they don't dance then they're no friends of mine).
+    <p>With that in mind, I'm pleased to introduce this Debt Payoff Planner, a new tool which will help you:</p>
+    <ul>
+        <li>Organize your loans in one place</li>
+        <li>Crunch the numbers to determine the total cost of your loans (interest + principal), and the date when each of your loans will be paid off</li>
+        <li>Design a month-by-month plan to get you from today to your debt-free future</li>
+        <li>Perform what-if analyses that illustrate how the final answers change if we tweak the assumptions</li>
+    </ul>
+
+    <p>A lighter, brighter, debt-free future in on the horizon. Click the Add Loan button below and let's get started!</p>
+
+    &nbsp;
+
     <h2>Loan Inputs</h2>
 
     <div id="loanDiv">
@@ -32,7 +46,11 @@
 
             <tr>
                 <td><span id="paymentTypeSpan">Payment Type</span></td>
-                <td><input type="radio" class="userInput2" id="avalancheType" name="paymentType" value="avalanche" checked="checked">Avalanche<br><input type="radio" class="userInput2" id="snowballType" name="paymentType" value="snowball">Snowball</td>
+
+                <div class="radio-toolbar">
+                    <td><input type="radio" class="userInput2" id="avalancheType" name="paymentType" value="avalanche" checked="checked"><label class="radioLabel" for="avalancheType">Avalanche</label><br>
+                    <input type="radio" class="userInput2" id="snowballType" name="paymentType" value="snowball"><label class="radioLabel" for="snowballType">Snowball</label></td>
+                </div>
             </tr>
         </table>
     </div>
@@ -45,12 +63,12 @@
         <p><b>Total Monthly Payment:</b> Must be greater than or equal to the minimum monthly payments on all of your loans combined</p>
         <p><b>Payment Type: </b></p>
         <ul>
-            <li><b>Avalanche</b> means that your excess payments (above and beyond your loan minimum payments) are used to pay off your loans with the <b>highest interest rate</b> first</li>
-            <li><b>Snowball</b> means that your excess payments are used to pay off your loans with the <b>smallest balances</b> first</li>
+            <li><b>Avalanche</b> means that your excess payments (above and beyond your loan minimum payments) are used to pay off the loans with the <b>highest interest rate</b> first</li>
+            <li><b>Snowball</b> means that your excess payments are used to pay off the loans with the <b>smallest balances</b> first</li>
             <li>The avalanche method is optimal from a mathematical perspective -- it allows you to minimize the total interest paid across your loans</li>
             <li>However, the snowball method allows you to pay off your small loans faster than in the avalanche method. Racking up quick wins can provide motivation to stay on track with your debt repayment strategy</li>
         </ul>
-        <p><b>Compounding:</b> This tool assumes that all of the loans use monthly compounding to calculate the interest payments</p>
+        <p><b>Compounding:</b> When calculating interest on your loans, this tool uses monthly compounding</p>
     </div>
 
     <div id="userMessageDiv">
@@ -78,7 +96,7 @@
 
         <div id="chartDiv">
 
-            <p>The chart below shows the total amount owed on your loans, on a month-by-month basis from today up until your loans are fully paid off.</p>
+            <p>The chart below shows the total amount owed on your loans, on a month-by-month basis from today up until the date when your loans are fully paid off.</p>
 
             <div id="totalBalanceChartDiv" tabindex="0">
                 <canvas id="totalBalanceChart"></canvas>
@@ -125,7 +143,7 @@
 
         <h2>Detailed Loan Tables</h2>
 
-        <p>Click the <b>+</b> icon for a table that lists out a month-by-month record of your loan payment, interest paid, principal paid, and loan balance (i.e., the nitty-gritty details).</p>
+        <p>Click the <b>+</b> icon(s) below to show the nitty-gritty details for each of your loans (a month-by-month record of your loan payment, interest paid, principal paid, and loan balance).</p>
 
         <div id="loanTableDiv">
 
@@ -138,8 +156,7 @@
         <div id="whatIfDiv">
 
             <p id="whatIfAnalysisPara"></p>
-
-            &nbsp;
+            <p>Below, we'll sketch out some new scenarios and see how the answers change.</p>
 
             <h3>What-If Analysis #1</h3>
 
@@ -182,12 +199,10 @@
                 <li>The loans with the smallest balances are also the loans with the highest interest rates -- meaning that the two methods produce the same priority ranking</li>
             </ul>
 
-            &nbsp;
-
             <h3>What-If Analysis #2</h3>
 
             <p>Now, how would the final results change if you increase your total monthly payment?</p>
-            <p>The analysis below shows how your total interest paid and debt-free date would change using different assumptions for your total monthly payment.</p>
+            <p>The table below shows how your total interest paid and debt-free date would change using different assumptions for your total monthly payment (while keeping everything else constant).</p>
 
             <table id="whatIfTable2" tabindex="0">
                 <tr>
